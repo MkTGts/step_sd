@@ -84,6 +84,22 @@ class OperatorServiceDB(ServiceDB, UserServiceDB):
         pass
 
 
+    @ServiceDB.with_session
+    def add_user_ip(self,
+                    user_id: str  # id пользователя для таблицы users
+                      ):
+        '''Метод добавления ip адреса пользователю в таблице users'''
+        pass
+
+
+    @ServiceDB.with_session
+    def add_user_geo(self,
+                     user_id: str  # id пользователя для таблицы users
+                     ):
+        '''Метод добавлени  расположения рабочего места пользователя в таблице users'''
+        pass
+        
+
 
 class AdminServiceDB(ServiceDB, UserServiceDB, OperatorServiceDB):
     @ServiceDB.with_session
