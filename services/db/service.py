@@ -2,6 +2,19 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from models import Base, User, Group
 import functools
+import logging
+
+
+# инициализация логгера
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    filename="logs.log",
+    filemode="a",
+    encoding="utf-8",
+    format= '[%(asctime)s] #%(levelname)-8s %(filename)s:'
+       '%(lineno)d - %(name)s - %(message)s'
+)
 
 
 engine = create_engine("sqlite:///data/db/app.db", echo=True)
@@ -15,14 +28,18 @@ class ServiceDB:
 
     @staticmethod
     # декоратор для начала, закртыия сессии и принятия изменений в ней
-    def with_session(self, func):
+    def with_session(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             with Session() as session:
-                data: list = func(*args, **kwargs)
-
-                session.add_all(data)
-                session.commit()
+                try:
+                    wrapper.session = session
+                    logger.info("Сессия запущена.")
+                    func(*args, **kwargs)
+                    logger.info("Сессия успешно завершилась.")
+                except Exception as err:
+                    session.rollback()
+                    logger.error(f"Во время сесси возникла ошибка {err}.")
         return wrapper
     
 
@@ -36,6 +53,11 @@ class ServiceDB:
                       closed_ar: str|None=None  # дата закрытия заявки. изначаль none
                       ):
         '''Метод создает новый тикет.'''
+        pass
+
+
+    def _check_invite(self) -> int: # type: ignore
+        '''Метод находит группу по инвайт-токену'''
         pass
 
 
@@ -57,7 +79,8 @@ class ServiceDB:
             user_ip = user_ip,
             user_geo = user_geo
         )
-        return [new_user]
+        self.create_user.session.add(new_user)
+        self.user_registration.session.commit()
     
 
 
@@ -71,7 +94,7 @@ class UserServiceDB(ServiceDB):
 
 
 
-class OperatorServiceDB(ServiceDB, UserServiceDB):
+class OperatorServiceDB(UserServiceDB):
     @ServiceDB.with_session
     def edit_status(self):
         '''Метод изменения статуса тикета'''
@@ -101,7 +124,7 @@ class OperatorServiceDB(ServiceDB, UserServiceDB):
         
 
 
-class AdminServiceDB(ServiceDB, UserServiceDB, OperatorServiceDB):
+class AdminServiceDB(OperatorServiceDB):
     @ServiceDB.with_session
     def create_group(self,
                          group_name: str,  # название группы 
@@ -113,13 +136,12 @@ class AdminServiceDB(ServiceDB, UserServiceDB, OperatorServiceDB):
 
     @ServiceDB.with_session
     def create_user(self, 
-                          invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
-                          tg_id: int,  # tg id пользователя
-                          username: str,  # юзернами пользователя в телеграме
-                          fullname: str, group_id: int,  # имя введенное пользователем
-                          user_ip: str="None",  # ip пользователя, вводится админом и оператором
-                          user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
-                        ) -> list:
+                    tg_id: int,  # tg id пользователя
+                    username: str,  # юзернами пользователя в телеграме
+                    fullname: str, group_id: int,  # имя введенное пользователем
+                    user_ip: str="None",  # ip пользователя, вводится админом и оператором
+                    user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
+                    ) -> list:
         '''Метод создания нового пользователя.
         Добавлен на случай если админу потребуется создать пользователя самому руками'''
         new_user = User(
@@ -130,7 +152,8 @@ class AdminServiceDB(ServiceDB, UserServiceDB, OperatorServiceDB):
             user_ip = user_ip,
             user_geo = user_geo
         )
-        return [new_user]
+        self.create_user.session.add(new_user)
+        self.create_user.session.commit()
 
 
     @ServiceDB.with_session    
@@ -157,6 +180,11 @@ class AdminServiceDB(ServiceDB, UserServiceDB, OperatorServiceDB):
         pass
 
     
+
+
+admin = AdminServiceDB()
+
+admin.create_user(tg_id=23, username="qstepashka", fullname="qstepan", group_id=1)
 
 
 

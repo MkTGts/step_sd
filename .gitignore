@@ -5,3 +5,4 @@ __pycache__/
 _test.py
 *.db
 *.xlsx
+*.db
