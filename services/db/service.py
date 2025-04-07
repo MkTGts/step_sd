@@ -26,22 +26,55 @@ Base.metadata.create_all(engine)
 class ServiceDB:
     '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''
 
-    @staticmethod
     # декоратор для начала, закртыия сессии и принятия изменений в ней
     def with_session(func):
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             with Session() as session:
                 try:
-                    wrapper.session = session
+                    if 'session' in func.__code__.co_varnames:
+                        kwargs['session'] = session 
+
                     logger.info("Сессия запущена.")
-                    func(*args, **kwargs)
+                    res = func(self, *args, **kwargs)
+
+                    if res is None:
+                        session.commit()
                     logger.info("Сессия успешно завершилась.")
+                    return res
                 except Exception as err:
                     session.rollback()
                     logger.error(f"Во время сесси возникла ошибка {err}.")
         return wrapper
     
+
+    @with_session
+    def _return_group_id(self, user_id: int, session) -> int:
+        '''Метод возвращающий id группы в которой пользователь состоит'''
+        return session.query(User.group_id).filter(User.user_id==user_id).first()[0]
+    
+
+    @with_session
+    def user_registration(self, 
+                          session,
+                          invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
+                          tg_id: int,  # tg id пользователя
+                          username: str,  # юзернами пользователя в телеграме
+                          fullname: str, group_id: int,  # имя введенное пользователем
+                          user_ip: str="None",  # ip пользователя, вводится админом и оператором
+                          user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
+                        ) -> list:
+        '''Метод регистрации нового пользователя.'''
+        new_user = User(
+            tg_id = tg_id,
+            username = username,
+            fullname = fullname,
+            group_id = group_id,
+            user_ip = user_ip,
+            user_geo = user_geo
+        )
+        session.add(new_user)
+
 
     @with_session
     def create_ticket(self, 
@@ -52,36 +85,8 @@ class ServiceDB:
                       created_at: str,  # дата созданяи заявки
                       closed_ar: str|None=None  # дата закрытия заявки. изначаль none
                       ):
-        '''Метод создает новый тикет.'''
+        '''Метод создания нового тикета.'''
         pass
-
-
-    def _check_invite(self) -> int: # type: ignore
-        '''Метод находит группу по инвайт-токену'''
-        pass
-
-
-    @with_session
-    def user_registration(self, 
-                          invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
-                          tg_id: int,  # tg id пользователя
-                          username: str,  # юзернами пользователя в телеграме
-                          fullname: str, group_id: int,  # имя введенное пользователем
-                          user_ip: str="None",  # ip пользователя, вводится админом и оператором
-                          user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
-                        ) -> list:
-        '''Метод создания нового пользователя.'''
-        new_user = User(
-            tg_id = tg_id,
-            username = username,
-            fullname = fullname,
-            group_id = group_id,
-            user_ip = user_ip,
-            user_geo = user_geo
-        )
-        self.create_user.session.add(new_user)
-        self.user_registration.session.commit()
-    
 
 
 class UserServiceDB(ServiceDB):
@@ -136,6 +141,7 @@ class AdminServiceDB(OperatorServiceDB):
 
     @ServiceDB.with_session
     def create_user(self, 
+                    session: Session, # type: ignore
                     tg_id: int,  # tg id пользователя
                     username: str,  # юзернами пользователя в телеграме
                     fullname: str, group_id: int,  # имя введенное пользователем
@@ -152,8 +158,7 @@ class AdminServiceDB(OperatorServiceDB):
             user_ip = user_ip,
             user_geo = user_geo
         )
-        self.create_user.session.add(new_user)
-        self.create_user.session.commit()
+        session.add(new_user)
 
 
     @ServiceDB.with_session    
@@ -182,12 +187,10 @@ class AdminServiceDB(OperatorServiceDB):
     
 
 
-admin = AdminServiceDB()
+#admin = AdminServiceDB()
 
-admin.create_user(tg_id=23, username="qstepashka", fullname="qstepan", group_id=1)
-
-
-
+#admin.create_user(tg_id=23, username="qstepashka", fullname="qstepan", group_id=1)
+#print(admin._return_group_id(user_id=2))
 
 
 
@@ -202,50 +205,6 @@ admin.create_user(tg_id=23, username="qstepashka", fullname="qstepan", group_id=
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-def create_new_user(Session):
-    with Session() as session:
-        new_user = User(tg_id = 1234,
-        username = "mktgts",
-        fullname = "Maksims",
-        group_id = 1,
-        user_ip = "192.168.1.52",
-        user_geo = "4 этаж")
-
-        session.add_all([new_user])
-        session.commit()"""
-
-
-
-
-#create_new_user(Session)
-
-
-#with Session() as session:
-#    add_new_user()
-
-
-#session.add_all([new_user])
-#session.commit()
-
-#us = session.query(User).first()
-#print(us)
-
-#session.close()
 
 
 
