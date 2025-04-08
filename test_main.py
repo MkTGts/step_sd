@@ -1,4 +1,4 @@
-from services.db.service import AdminServiceDB
+from services.db.services.admin_service import AdminServiceDB
 
 
 admin = AdminServiceDB()

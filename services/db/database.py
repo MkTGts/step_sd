@@ -19,5 +19,5 @@ logging.basicConfig(
 
 engine = create_engine("sqlite:///data/db/app.db", echo=True)
 Session = sessionmaker(bind=engine)
-Base = declarative_base()
-Base.metadata.create_all(engine)
+#Base = declarative_base()
+#Base.metadata.create_all(engine)
