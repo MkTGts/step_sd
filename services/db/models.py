@@ -1,5 +1,6 @@
+from sqlalchemy import Integer, String, Column, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, Integer, String, Column, ForeignKey, TIMESTAMP
+#from services.db.database import Base
 
 
 Base = declarative_base()

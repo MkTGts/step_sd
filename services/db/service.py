@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from models import Base, User, Group
+from sqlalchemy.orm import Session
+from services.db.models import Base, User, Group, Ticket
+from services.db.database import engine
 import functools
 import logging
 
@@ -17,12 +17,6 @@ logging.basicConfig(
 )
 
 
-engine = create_engine("sqlite:///data/db/app.db", echo=True)
-Session = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)
-
-
-
 class ServiceDB:
     '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''
 
@@ -30,7 +24,8 @@ class ServiceDB:
     def with_session(func):
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
-            with Session() as session:
+            from services.db.database import Session as LocalSession
+            with LocalSession() as session:
                 try:
                     if 'session' in func.__code__.co_varnames:
                         kwargs['session'] = session 
@@ -49,7 +44,7 @@ class ServiceDB:
     
 
     @with_session
-    def _return_group_id(self, user_id: int, session) -> int:
+    def _return_group_id(self, user_id: int, session: Session) -> int:
         '''Метод возвращающий id группы в которой пользователь состоит'''
         return session.query(User.group_id).filter(User.user_id==user_id).first()[0]
     
@@ -141,7 +136,7 @@ class AdminServiceDB(OperatorServiceDB):
 
     @ServiceDB.with_session
     def create_user(self, 
-                    session: Session, # type: ignore
+                    session: Session, 
                     tg_id: int,  # tg id пользователя
                     username: str,  # юзернами пользователя в телеграме
                     fullname: str, group_id: int,  # имя введенное пользователем
@@ -187,10 +182,10 @@ class AdminServiceDB(OperatorServiceDB):
     
 
 
-#admin = AdminServiceDB()
+admin = AdminServiceDB()
 
-#admin.create_user(tg_id=23, username="qstepashka", fullname="qstepan", group_id=1)
-#print(admin._return_group_id(user_id=2))
+admin.create_user(tg_id=23, username="qstepashka", fullname="qstepan", group_id=1)
+print(admin._return_group_id(user_id=2))
 
 
 
