@@ -13,6 +13,7 @@ class User(Base):
     tg_id = Column(Integer)
     username = Column(String)
     fullname = Column(String)
+    user_type = Column(Integer)  # 1 - admins, 2 - operators, 3 - users
     group_id = Column(Integer, ForeignKey("groups.group_id"))
     user_ip = Column(String)
     user_geo = Column(String)

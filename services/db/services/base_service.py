@@ -33,6 +33,7 @@ class ServiceDB:
                           tg_id: int,  # tg id пользователя
                           username: str,  # юзернами пользователя в телеграме
                           fullname: str, group_id: int,  # имя введенное пользователем
+                          user_type: int = 3,  # тип пользователя, по дефолту обычный пользователь
                           user_ip: str="None",  # ip пользователя, вводится админом и оператором
                           user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
                         ) -> list:
@@ -42,6 +43,7 @@ class ServiceDB:
             username = username,
             fullname = fullname,
             group_id = group_id,
+            user_type = user_type,
             user_ip = user_ip,
             user_geo = user_geo
         )
