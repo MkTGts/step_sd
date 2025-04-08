@@ -38,9 +38,10 @@ class AdminServiceDB(OperatorServiceDB):
     def create_user(self, 
                     session: Session, 
                     tg_id: int,  # tg id пользователя
-                    username: str,  # юзернами пользователя в телеграме
-                    fullname: str, group_id: int,  # имя введенное пользователем
-                    user_type: int = 3,
+                    username: str,  # юзернэйм пользователя в телеграме
+                    fullname: str,   # имя введенное пользователем
+                    group_id: int,
+                    user_type: int = 3,  
                     user_ip: str="None",  # ip пользователя, вводится админом и оператором
                     user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
                     ) -> list:
@@ -90,7 +91,7 @@ class AdminServiceDB(OperatorServiceDB):
                  "username": user.username,
                  "fullname": user.fullname,
                  "user_type": user.user_type,
-                 "group_id": user.group_id,
+                 "group_name": session.query(Group).get(user.group_id).group_name,
                  "user_ip": user.user_ip,
                  "user_geo": user.user_geo} 
                 for user in session.query(User).all()]

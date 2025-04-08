@@ -21,4 +21,4 @@ def invite_token_generator() -> int:
     return int(''.join((str(random.randint(1, 9)) for _ in range(6))))
 
 
-print(invite_token_generator())
+#print(invite_token_generator())
