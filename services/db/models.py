@@ -45,7 +45,7 @@ class Group(Base):
     group_id = Column(Integer, primary_key=True)
     group_name = Column(String)
     invite_token = Column(Integer)
-    operator_id = Column(Integer, ForeignKey("operators.operator_id"))
+
 
 
 class Ticket(Base):

@@ -1,6 +1,6 @@
 from .operator_service import OperatorServiceDB
 from sqlalchemy.orm import Session
-from services.db.models import User, Group
+from services.db.models import User, Group, Admin, Operator
 from services.db.decorators import with_session
 from services.service import invite_token_generator
 import logging
@@ -57,6 +57,42 @@ class AdminServiceDB(OperatorServiceDB):
             user_geo = user_geo
         )
         session.add(new_user)
+
+
+    @with_session
+    def create_operator(self, 
+                    session: Session, 
+                    tg_id: int,  # tg id пользователя
+                    username: str,  # юзернэйм пользователя в телеграме
+                    fullname: str,   # имя введенное пользователем
+                    group_id: int,
+                    ) -> list:
+        '''Метод создания нового пользователя.
+        Добавлен на случай если админу потребуется создать пользователя самому руками'''
+        new_operator = Operator(
+            tg_id = tg_id,
+            username = username,
+            fullname = fullname,
+            group_id = group_id,
+        )
+        session.add(new_operator)
+
+
+    @with_session
+    def create_admin(self, 
+                    session: Session, 
+                    tg_id: int,  # tg id пользователя
+                    username: str,  # юзернэйм пользователя в телеграме
+                    fullname: str,   # имя введенное пользователем
+                    ) -> list:
+        '''Метод создания нового пользователя.
+        Добавлен на случай если админу потребуется создать пользователя самому руками'''
+        new_admin = Admin(
+            tg_id = tg_id,
+            username = username,
+            fullname = fullname,
+        )
+        session.add(new_admin)
 
 
     @with_session    
