@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from services.db.models import Base, User, Group, Ticket
 from services.db.decorators import with_session
+from services.service import now_time
 import functools
 import logging
 
@@ -52,15 +53,25 @@ class ServiceDB:
 
     @with_session
     def create_ticket(self, 
+                      session: Session,
                       user_id: int,  # id пользователя который создает заявку
                       group_id: int,  #  id группы в которой пользователь состоит
                       operator_id: int,  # id оператора группы
                       message: str,  # текст заявки, подается пользователем
-                      created_at: str,  # дата созданяи заявки
-                      closed_ar: str|None=None  # дата закрытия заявки. изначаль none
+                      status: str = "open",  # изначально статус открыто 
+                      closed_at: str|None=None  # дата закрытия заявки. изначаль none
                       ):
         '''Метод создания нового тикета.'''
-        pass
+        new_ticket = Ticket(
+            user_id = user_id,
+            group_id = group_id,
+            operator_id = operator_id,
+            message = message,
+            status = status,
+            created_at = now_time(),
+            closed_at=closed_at
+        )
+        session.add(new_ticket)
         
 
 

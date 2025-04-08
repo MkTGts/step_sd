@@ -2,6 +2,7 @@ import random
 #from lexicon.lexicon import LEXICON_RU
 import logging
 import random
+from datetime import datetime
 
 
 # инициализация логгера
@@ -21,4 +22,8 @@ def invite_token_generator() -> int:
     return int(''.join((str(random.randint(1, 9)) for _ in range(6))))
 
 
-#print(invite_token_generator())
+def now_time():
+    '''Функция возвращает дату и время на данный момент'''
+    return str(datetime.now())
+
+

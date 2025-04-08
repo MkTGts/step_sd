@@ -31,12 +31,11 @@ class Ticket(Base):
     __tablename__ = "tickets"
 
     ticket_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.user_id")),
-    group_id = Column(Integer, ForeignKey("groups.group_id")),
-    operator_id = Column(Integer, ForeignKey("users.user_id")),
-    message = Column(String),
-    status = Column(String),
-    #priority = Column(String),
-    created_at = Column(String),
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    group_id = Column(Integer, ForeignKey("groups.group_id"))
+    operator_id = Column(Integer, ForeignKey("users.user_id"))
+    message = Column(String)
+    status = Column(String)
+    created_at = Column(String)
     closed_at = Column(String)
     
