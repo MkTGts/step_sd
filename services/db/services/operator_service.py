@@ -1,7 +1,7 @@
 from .user_service import UserServiceDB
 from services.db.decorators import with_session
 from sqlalchemy.orm import Session
-from services.db.models import User
+from services.db.models import User, Ticket, Group
 import logging
 
 
@@ -19,15 +19,32 @@ logging.basicConfig(
 
 class OperatorServiceDB(UserServiceDB):
     @with_session
+    def show_groups_users(self,
+                           session: Session
+                           ):
+        '''Метод просмотра пользователь состоящих в группе этого оператора.'''
+        pass
+
+
+    @with_session
     def edit_status(self):
         '''Метод изменения статуса тикета'''
         pass
 
 
     @with_session
-    def drop_ticket(self):
+    def drop_ticket(self,
+                    session: Session,
+                    ticket_id: int
+                    ):
         '''Метод удаления тикета'''
-        pass
+        ticket = session.query(Ticket).get(ticket_id)
+        if not ticket:
+            logger.warning(f"Попытка удалить тикет с несуществующим ID: {ticket_id}")
+            return None
+        
+        session.delete(ticket)
+        logger.warning(f"Удален тикет с ID {ticket.ticket_id}")
 
 
     @with_session
