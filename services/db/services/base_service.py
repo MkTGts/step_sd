@@ -22,15 +22,66 @@ class ServiceDB:
     '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''
 
     @with_session
+    def _all_user_tg_id_list(self, session: Session) -> list:
+        '''Метод возвращаюищий список id всех пользователей в базею'''
+        return [user.tg_id for user in session.query(User).all()]
+
+
+    @with_session
     def _in_base(self, tg_id: int, session: Session):
         '''Метод проверяющий есть ли пользователь в базе'''
         return session.query(User.user_id).filter(User.tg_id==tg_id).first()
+    
+
+    @with_session
+    def _in_invite(self, invite_token: int, session: Session):
+        '''Метод проверяющий есть ли такой инавайт'''
+        return session.query(Group.invite_token).filter(Group.invite_token==invite_token).first()
+
+    
+    @with_session
+    def _set_fullname(self, session: Session, tg_id: int, fullname: str):
+        '''Устанавливает полное имя пользователя, им же введенное'''
+        user = session.query(User).filter(User.tg_id==tg_id).first()
+        user.fullname = fullname
+    
+
+    @with_session
+    def _have_fullname(self, session: Session, tg_id: int):
+        '''Метод проверяет записано ли полное имя пользователя в базе'''
+        return session.query(User).filter(User.tg_id==tg_id).first().fullname
         
   
     @with_session
     def _return_group_id(self, user_id: int, session: Session) -> int:
         '''Метод возвращающий id группы в которой пользователь состоит'''
         return session.query(User.group_id).filter(User.user_id==user_id).first()[0]
+    
+
+    @with_session
+    def user_registration(self, 
+                          session: Session,
+                          invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
+                          tg_id: int,  # tg id пользователя
+                          username: str,  # юзернами пользователя в телеграме
+                          fullname: str|None=None, 
+                          user_ip: str|None=None,  # ip пользователя, вводится админом и оператором
+                          user_geo: str|None=None  # расположение рабочего места пользователя, вводится админом или оператором
+                        ) -> bool:
+        '''Метод регистрации нового пользователя.'''
+        group_obj = session.query(Group).filter(Group.invite_token==invite_token).first()
+        if group_obj is not None:
+            new_user = User(
+                tg_id = tg_id,
+                username = username,
+                fullname = fullname,
+                group_id = group_obj.group_id
+            )
+            session.add(new_user)
+            logger.info(f"Зарегистрировался пользователь с TG ID {tg_id}. Username: {username}. По инвайту: {invite_token}")
+        else:
+            logger.warning(f"Попытка зарегистрироваться с несуществущим инвайтом. Данные пользователя: TG ID: {tg_id}, username: {username}")
+
 
 
     @with_session

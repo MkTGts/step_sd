@@ -21,31 +21,6 @@ logging.basicConfig(
 class UserServiceDB(ServiceDB):
 
     @with_session
-    def user_registration(self, 
-                          session: Session,
-                          invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
-                          tg_id: int,  # tg id пользователя
-                          username: str,  # юзернами пользователя в телеграме
-                          fullname: str, 
-                          user_ip: str|None=None,  # ip пользователя, вводится админом и оператором
-                          user_geo: str|None=None  # расположение рабочего места пользователя, вводится админом или оператором
-                        ) -> bool:
-        '''Метод регистрации нового пользователя.'''
-        group_obj = session.query(Group).filter(Group.invite_token==invite_token).first()
-        if group_obj is not None:
-            new_user = User(
-                tg_id = tg_id,
-                username = username,
-                fullname = fullname,
-                group_id = group_obj.group_id
-            )
-            session.add(new_user)
-            logger.info(f"Зарегистрировался пользователь с TG ID {tg_id}. Username: {username}. По инвайту: {invite_token}")
-        else:
-            logger.warning(f"Попытка зарегистрироваться с несуществущим инвайтом. Данные пользователя: TG ID: {tg_id}, username: {username}")
-
-
-    @with_session
     def user_ticket_list(self,
                     session: Session,
                     user_id: str  # id пользователя для поиска по таблице тикетов
