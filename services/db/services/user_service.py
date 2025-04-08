@@ -45,7 +45,6 @@ class UserServiceDB(ServiceDB):
             logger.warning(f"Попытка зарегистрироваться с несуществущим инвайтом. Данные пользователя: TG ID: {tg_id}, username: {username}")
 
 
-
     @with_session
     def user_ticket_list(self,
                     session: Session,

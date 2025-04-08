@@ -20,6 +20,12 @@ logging.basicConfig(
 
 class ServiceDB:
     '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''
+
+    @with_session
+    def _in_base(self, tg_id: int, session: Session):
+        '''Метод проверяющий есть ли пользователь в базе'''
+        return session.query(User.user_id).filter(User.tg_id==tg_id).first()
+        
   
     @with_session
     def _return_group_id(self, user_id: int, session: Session) -> int:
