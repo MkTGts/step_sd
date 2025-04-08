@@ -20,16 +20,36 @@ logging.basicConfig(
 class OperatorServiceDB(UserServiceDB):
     @with_session
     def show_groups_users(self,
-                           session: Session
-                           ):
-        '''Метод просмотра пользователь состоящих в группе этого оператора.'''
-        pass
+                           session: Session,
+                           operator_id
+                           ) -> list[dict]:
+        '''Метод просмотра пользователей состоящих в группе этого оператора.'''
+        group_id = session.query(Group).get(operator_id).group_id
+        return [{
+                "user_id": user.user_id,
+                "username": user.username,
+                "fullname": user.fullname,
+                "user_ip": user.user_ip,
+                "user_geo": user.user_geo
+        }
+            for user in session.query(User).filter(User.group_id == group_id).all()
+        ]
+        
 
 
     @with_session
-    def edit_status(self):
+    def edit_status(self,
+                    session: Session,
+                    ticket_id: int,
+                    status: str
+                ):
         '''Метод изменения статуса тикета'''
-        pass
+        ticket = session.query(Ticket).get(ticket_id)
+        if not ticket:
+            logger.error(f"Тикет с ID  {ticket_id} не найден.")
+            return None
+        ticket.status = status
+        logger.info(f"Обновлен статус тикета с ID {ticket_id}")
 
 
     @with_session
