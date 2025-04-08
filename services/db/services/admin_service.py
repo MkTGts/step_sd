@@ -2,7 +2,9 @@ from .operator_service import OperatorServiceDB
 from sqlalchemy.orm import Session
 from services.db.models import User, Group
 from services.db.decorators import with_session
+from services.service import invite_token_generator
 import logging
+
 
 
 # инициализация логгера
@@ -22,12 +24,11 @@ class AdminServiceDB(OperatorServiceDB):
     def create_group(self,
                         session: Session,
                         group_name: str,  # название группы 
-                        invite_token: int  # токен для приглашения пользователя в группу
                     ):
         '''Метод создания новой группы'''
         new_group = Group(
             group_name=group_name,
-            invite_token=invite_token
+            invite_token=invite_token_generator()
         )
         session.add(new_group)
 

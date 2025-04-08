@@ -1,6 +1,7 @@
 import random
-from lexicon.lexicon import LEXICON_RU
+#from lexicon.lexicon import LEXICON_RU
 import logging
+import random
 
 
 # инициализация логгера
@@ -13,3 +14,11 @@ logging.basicConfig(
     format= '[%(asctime)s] #%(levelname)-8s %(filename)s:'
        '%(lineno)d - %(name)s - %(message)s'
 )
+
+
+def invite_token_generator() -> int:
+    '''Функция генерирует инвайт токены для групп.'''
+    return int(''.join((str(random.randint(1, 9)) for _ in range(6))))
+
+
+print(invite_token_generator())
