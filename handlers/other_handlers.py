@@ -58,11 +58,11 @@ async def process_registaration_user_invite(message: Message):
             username=message.from_user.username
         )
         await message.answer(
-            text="Запущен процесс регистрации.\nВведите ваше имя."
+            text=LEXICON_RU["registration_invite_ok"]
         )
     else:
         await message.answer(
-            text="Неверный инвайт. Введите верный."
+            text=LEXICON_RU["registration_invite_not_ok"]
         )
 
 
