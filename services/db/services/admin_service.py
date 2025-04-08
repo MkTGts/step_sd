@@ -41,7 +41,7 @@ class AdminServiceDB(OperatorServiceDB):
                     username: str,  # юзернэйм пользователя в телеграме
                     fullname: str,   # имя введенное пользователем
                     group_id: int,
-                    user_type: int = 3,  
+                    #user_type: int = 3,  
                     user_ip: str="None",  # ip пользователя, вводится админом и оператором
                     user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
                     ) -> list:
@@ -52,7 +52,7 @@ class AdminServiceDB(OperatorServiceDB):
             username = username,
             fullname = fullname,
             group_id = group_id,
-            user_type = user_type,
+            #user_type = user_type,
             user_ip = user_ip,
             user_geo = user_geo
         )
