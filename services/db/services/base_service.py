@@ -25,30 +25,6 @@ class ServiceDB:
     def _return_group_id(self, user_id: int, session: Session) -> int:
         '''Метод возвращающий id группы в которой пользователь состоит'''
         return session.query(User.group_id).filter(User.user_id==user_id).first()[0]
-    
-
-    @with_session
-    def user_registration(self, 
-                          session,
-                          invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
-                          tg_id: int,  # tg id пользователя
-                          username: str,  # юзернами пользователя в телеграме
-                          fullname: str, group_id: int,  # имя введенное пользователем
-                          #user_type: int = 3,  # тип пользователя, по дефолту обычный пользователь
-                          user_ip: str="None",  # ip пользователя, вводится админом и оператором
-                          user_geo: str="None"  # расположение рабочего места пользователя, вводится админом или оператором
-                        ) -> list:
-        '''Метод регистрации нового пользователя.'''
-        new_user = User(
-            tg_id = tg_id,
-            username = username,
-            fullname = fullname,
-            group_id = group_id,
-            #user_type = user_type,
-            user_ip = user_ip,
-            user_geo = user_geo
-        )
-        session.add(new_user)
 
 
     @with_session
