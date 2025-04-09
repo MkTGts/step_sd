@@ -28,15 +28,25 @@ but_admin_tickets = InlineKeyboardButton(
 )
 
 # создание инлайн клавиатуры основного меню админа
-admin_main_inline_kb =InlineKeyboardMarkup(
+admin_main_inline_kb = InlineKeyboardMarkup(
     inline_keyboard=[[but_admin_users], [but_admin_operators], [but_admin_groups], [but_admin_tickets]]
 )
 
 
 
+but_admin_back_to_main_menu = InlineKeyboardButton(
+    text=LEXCON_ADMIN_KEYBOARDS["back_to_main_menu"],
+    callback_data="back_to_main_menu"
+)
 
 
 
+
+# кнопка для просмотра списка всех пользователей
+but_admin_show_users = InlineKeyboardButton(
+    text=LEXCON_ADMIN_KEYBOARDS["show_users"],
+    callback_data="admin_show_users"
+)
 
 # кнопка для создания пользователя
 but_admin_create_user = InlineKeyboardButton(
@@ -49,6 +59,14 @@ but_admin_drop_user = InlineKeyboardButton(
     text=LEXCON_ADMIN_KEYBOARDS["drop_user"],
     callback_data="admin_drop_user"
 )
+
+# создание инлайн клавиатуры админского подменю Пользователи
+admin_submenu_users_kb = InlineKeyboardMarkup(
+    inline_keyboard=[[but_admin_show_users], [but_admin_create_user], [but_admin_drop_user], [but_admin_back_to_main_menu]]
+)
+
+
+
 
 # кнопка для создания оператора
 but_admin_create_operator = InlineKeyboardButton(
