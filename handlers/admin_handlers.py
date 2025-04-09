@@ -71,6 +71,7 @@ async def process_admin_submenu_users_select_group(callback: CallbackQuery):
             for user in admin.show_user_list_by_group_id(groupd_id=group_id)
         ])
     )
+    await callback.message.edit_reply_markup(reply_markup=None)
     await callback.answer()
 
 
