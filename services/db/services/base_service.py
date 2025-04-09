@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from services.db.models import Base, User, Group, Ticket, Operator
+from services.db.models import Base, User, Group, Ticket, Operator, Admin
 from services.db.decorators import with_session
 from services.service import now_time
 import functools
@@ -19,19 +19,7 @@ logging.basicConfig(
 
 
 class ServiceDB:
-    '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''
-
-    @with_session
-    def _all_user_tg_id_list(self, session: Session) -> list:
-        '''Метод возвращаюищий список id всех пользователей в базею'''
-        return [user.tg_id for user in session.query(User).all()]
-
-
-    @with_session
-    def _in_base(self, tg_id: int, session: Session):
-        '''Метод проверяющий есть ли пользователь в базе'''
-        return session.query(User.user_id).filter(User.tg_id==tg_id).first()
-    
+    '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''    
 
     @with_session
     def _in_invite(self, invite_token: int, session: Session):
@@ -60,14 +48,27 @@ class ServiceDB:
 
     @with_session
     def _return_user_id(self, tg_id: int, session: Session) -> int:
-        '''Метод возвращает ID пользователя по TG ID'''
+        '''Метод возвращающий ID пользователя по TG ID'''
         return session.query(User).filter(User.tg_id==tg_id).first().user_id
     
 
     @with_session
     def _return_group_operator(self, session: Session, group_id: int) -> int:
-        '''Метод возвращает id оператора группы'''
+        '''Метод возвращающий id оператора группы по id группы'''
         return session.query(Operator).filter(Operator.group_id==group_id).first().operator_id
+    
+
+    @with_session
+    def _check_role(self, session: Session, tg_id: int):
+        '''Метод определяющий роль пользователя по тг ид'''
+        if session.query(Admin).filter(Admin.tg_id==tg_id).first():
+            return "admin"
+        elif session.query(Operator).filter(Operator.tg_id==tg_id).first():
+            return "operator"
+        elif session.query(User).filter(User.tg_id==tg_id).first():
+            return "user"
+        else:
+            return None
     
 
     @with_session

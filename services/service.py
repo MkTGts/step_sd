@@ -27,4 +27,3 @@ def now_time():
     return str(datetime.now().strftime("%d.%m.%Y, %H:%M:%S"))
 
 
-print(now_time())

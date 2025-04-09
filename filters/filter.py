@@ -10,18 +10,24 @@ base = ServiceDB()
 class IsRegistredUserInvite(BaseFilter):
     '''Фильтр проверяющий зарегистрирован ли пользователь и введен ли инвайт.
     Использоваться будет в команде /start (для незарегистрированных пользователей)'''
-    def __init__(self):
-        self.users_tg_id = base._all_user_tg_id_list()  # список всех тг ид пользователей
-
     async def __call__(self, message: Message):
-        return message.from_user.id not in self.users_tg_id and message.text.isdigit() and len(message.text) == 6
+        return not base._check_role(tg_id=message.from_user.id) and message.text.isdigit() and len(message.text) == 6
 
 
 class IsRegistredUserName(BaseFilter):
     '''Фильтр проверяющий зарегистрирован ли пользовател и введено ли имя.
     Будет использоваться после ввода инвайта (для незарегистрированных пользователей)'''
-    #def __init__(self):
-    #    self.users_tg_id = base._all_user_tg_id_list()  # список всех тг ид пользователей
-
     async def __call__(self, message: Message):
-        return base._in_base(message.from_user.id) and not base._have_fullname(message.from_user.id) and message.text.isalnum() 
+        return base._check_role(tg_id=message.from_user.id)=="user" and not base._have_fullname(message.from_user.id) and message.text.isalnum() 
+    
+
+class CheckRoleAdmin(BaseFilter):
+    '''Фильтр проверяющий явлиется ли пользователь администратором'''
+    async def __call__(self, message: Message):
+        return base._check_role(tg_id=message.from_user.id)=="admin"
+
+
+class CheckRoleOperator(BaseFilter):
+    '''Фильтр проверяющий является пользователь оператором'''
+    async def __call__(self, message: Message):
+        return base._check_role(tg_id=message.from_user.id)=="operator"
