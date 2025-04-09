@@ -24,6 +24,7 @@ def invite_token_generator() -> int:
 
 def now_time():
     '''Функция возвращает дату и время на данный момент'''
-    return str(datetime.now())
+    return str(datetime.now().strftime("%d.%m.%Y, %H:%M:%S"))
 
 
+print(now_time())

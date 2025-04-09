@@ -16,14 +16,15 @@ admin = AdminServiceDB()
 #admin.create_admin(tg_id=4234242, username="admin1", fullname="Admin Name")
 #admin.edit_user_ip(user_id=1, user_ip='192.168.1.10')
 #admin.edit_user_geo(user_id=1, user_geo="серверная")
-#admin.drop_ticket(ticket_id=2)
+#admin.drop_ticket(ticket_id=1)
 #print(admin.user_ticket_list(user_id=1))
 #print(admin.user_registration(invite_token=7996322, tg_id=6542, username="User1", fullname="User1 Name"))
 #print(admin.show_groups_users(operator_id=1))
 #admin.edit_status(ticket_id=1, status="in work")
 #print(admin._in_base(3211))
 #print(admin._in_invite(765874))
-
+#print(admin._return_user_id(321))
+#print(admin._return_group_operator(group_id=1))
 
 def for_test():
     admin.create_admin(tg_id=321, username="mktgts", fullname="Maksim")

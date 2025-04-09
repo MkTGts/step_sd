@@ -37,8 +37,10 @@ async def process_command_start(message: Message):
         logger.info(f"Пришла команда старт от незарегистрированного пользователя с  TG ID {message.from_user.id}")
     else:
         await message.answer(
-            text="Авторизация пройдена"
+            text="Авторизация пройдена",
+            reply_markup=user_inline_kb
         )
+
 
 
 # хэндлер на команду хелп

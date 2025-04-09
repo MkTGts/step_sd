@@ -59,6 +59,18 @@ class ServiceDB:
     
 
     @with_session
+    def _return_user_id(self, tg_id: int, session: Session) -> int:
+        '''Метод возвращает ID пользователя по TG ID'''
+        return session.query(User).filter(User.tg_id==tg_id).first().user_id
+    
+
+    @with_session
+    def _return_group_operator(self, session: Session, group_id: int) -> int:
+        '''Метод возвращает id оператора группы'''
+        return session.query(Operator).filter(Operator.group_id==group_id).first().operator_id
+    
+
+    @with_session
     def user_registration(self, 
                           session: Session,
                           invite_token: int,  # пользователь вводит токен для регистрации и по токену распределяется в свою группу
@@ -88,10 +100,8 @@ class ServiceDB:
     def create_ticket(self, 
                       session: Session,
                       user_id: int,  # id пользователя который создает заявку
-                      
-                      #operator_id: int,  # id оператора группы
                       message: str,  # текст заявки, подается пользователем
-                      status: str = "open",  # изначально статус открыто 
+                      status: str = "Открыт",  # изначально статус открыто 
                       closed_at: str|None=None,  # дата закрытия заявки. изначаль none
                       group_id: int|None = None,  #  id группы в которой пользователь состоит
                       ):

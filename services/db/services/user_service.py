@@ -33,5 +33,5 @@ class UserServiceDB(ServiceDB):
                 "created": ticket.created_at,
                 "message": ticket.message
              }
-            for ticket in session.query(Ticket).filter(Ticket.user_id).all()
+            for ticket in session.query(Ticket).filter(Ticket.user_id==user_id).all()
         ]
