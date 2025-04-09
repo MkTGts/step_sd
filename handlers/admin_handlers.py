@@ -54,10 +54,23 @@ async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.message.answer(
         text="<b>Выберите организацию</b>",
         reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin{id_}")]
+            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin{str(id_)}")]
                              for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
         )
-    
+    await callback.answer()
+
+
+@router.callback_query(F.data.in_([f"group_for_admin{str(id_)}" for id_ in range(1, 10)]))
+async def process_admin_submenu_users_select_group(callback: CallbackQuery):
+    group_id = callback.data[-1]
+
+    await callback.message.answer(
+        text="<b>Список пользователей:</b>\n" +
+        "\n\n".join([
+            f"ID пользователя: {user['user_id']}\nTG ID: {user['tg_id']}\nusername: {user['username']}\nПолное имя: {user['fullname']}\nIP пользователя: {user['user_ip']}\nРасположение рабочего места пользователя: {user['user_geo']}"
+            for user in admin.show_user_list_by_group_id(groupd_id=group_id)
+        ])
+    )
     await callback.answer()
 
 

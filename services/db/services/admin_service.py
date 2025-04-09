@@ -118,7 +118,7 @@ class AdminServiceDB(OperatorServiceDB):
 
 
     @with_session
-    def show_user_list(self, session: Session):
+    def show_user_list_by_id(self, session: Session):
         '''Метод выводит список всех пользователей'''
         return [{"user_id": user.user_id,
                  "tg_id": user.tg_id,

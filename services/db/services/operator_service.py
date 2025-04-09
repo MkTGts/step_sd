@@ -38,6 +38,19 @@ class OperatorServiceDB(UserServiceDB):
 
 
     @with_session
+    def show_user_list_by_group_id(self, session: Session, groupd_id: int):
+        '''Метод выводит список всех пользователей'''
+        return [{"user_id": user.user_id,
+                 "tg_id": user.tg_id,
+                 "username": user.username,
+                 "fullname": user.fullname,
+                 "user_ip": user.user_ip,
+                 "user_geo": user.user_geo} 
+                for user in session.query(User).filter(User.group_id==groupd_id).all()]
+
+
+
+    @with_session
     def edit_status(self,
                     session: Session,
                     ticket_id: int,
