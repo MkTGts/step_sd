@@ -61,14 +61,34 @@ class ServiceDB:
     @with_session
     def _check_role(self, session: Session, tg_id: int):
         '''Метод определяющий роль пользователя по тг ид'''
-        if session.query(Admin).filter(Admin.tg_id==tg_id).first():
+        '''if session.query(Admin).filter(Admin.tg_id==tg_id).first():
             return "admin"
         elif session.query(Operator).filter(Operator.tg_id==tg_id).first():
             return "operator"
         elif session.query(User).filter(User.tg_id==tg_id).first():
             return "user"
         else:
+            return None'''
+        try:
+            # Проверяем от высшей роли к низшей
+            if session.query(Admin).filter(Admin.tg_id == tg_id).first():
+                logger.debug(f"Найден администратор с tg_id={tg_id}")
+                return "admin"
+            
+            if session.query(Operator).filter(Operator.tg_id == tg_id).first():
+                logger.debug(f"Найден оператор с tg_id={tg_id}")
+                return "operator"
+            
+            if session.query(User).filter(User.tg_id == tg_id).first():
+                logger.debug(f"Найден пользователь с tg_id={tg_id}")
+                return "user"
+            
+            logger.warning(f"Пользователь с tg_id={tg_id} не найден")
             return None
+            
+        except Exception as e:
+            logger.error(f"Ошибка определения роли для tg_id={tg_id}: {str(e)}")
+            raise 
     
 
     @with_session

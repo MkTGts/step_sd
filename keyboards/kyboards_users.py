@@ -1,17 +1,17 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-from lexicon.lexicon import LEXCON_USER_KEYBOARS
+from lexicon.lexicon import LEXCON_USER_KEYBOARDS
 
 
 # кнопка для вывода списка тикетов пользователя
 but_user_tickets_list = InlineKeyboardButton(
-    text=LEXCON_USER_KEYBOARS["tickets_list"],
+    text=LEXCON_USER_KEYBOARDS["tickets_list"],
     callback_data="user_tickets_list"
 )
 
 # кнопка для начала создания тикета пользоватеолем
 but_user_create_ticket = InlineKeyboardButton(
-    text=LEXCON_USER_KEYBOARS["create_ticket"],
+    text=LEXCON_USER_KEYBOARDS["create_ticket"],
     callback_data="user_create_ticket"
 )
 

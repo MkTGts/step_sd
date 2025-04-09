@@ -9,6 +9,7 @@ from services.db.services.admin_service import AdminServiceDB
 from services.db.services.operator_service import OperatorServiceDB
 from services.db.services.user_service import UserServiceDB
 from keyboards.kyboards_users import user_inline_kb
+from keyboards.kyboards_admins import admin_main_inline_kb
 
 
 # инициализация логгера
@@ -30,26 +31,26 @@ router = Router()  # подключение роутера
 @router.message(Command(commands="start"))
 async def process_command_start(message: Message):
     # проверка есть ли пользователь в базе 
-    if base._check_role(tg_id=message.from_user.id) != "user":
+    if base._check_role(tg_id=message.from_user.id) is None:
         await message.answer(
             text=LEXICON_RU["not_reg"]
         )
         logger.info(f"Пришла команда старт от незарегистрированного пользователя с  TG ID {message.from_user.id}")
-    else:
+    elif base._check_role(tg_id=message.from_user.id) == "user":
         await message.answer(
-            text="Авторизация пройдена",
+            text="Авторизация пользователя пройдена",
             reply_markup=user_inline_kb
         )
+    elif base._check_role(tg_id=message.from_user.id) == "admin":
+        await message.answer(
+            text="Авторизация администратора пройдена",
+            reply_markup=admin_main_inline_kb
+        )
+    elif base._check_role(tg_id=message.from_user.id) == "operator":
+        await message.answer(
+            text="Авторизация оператора пройдена"
+        )
 
-
-
-# хэндлер на команду хелп
-@router.message(Command(commands="help"))
-async def process_command_help(message: Message):
-    await message.answer(
-        text=LEXICON_RU["/help"]
-    )
-    logger.info(f'Вызвана команда /help пользоваетелм с TG ID {message.from_user.id}')
 
 
 @router.message(IsRegistredUserInvite())
@@ -69,6 +70,14 @@ async def process_registaration_user_invite(message: Message):
         )
 
 
+
+# хэндлер на команду хелп
+@router.message(Command(commands="help"))
+async def process_command_help(message: Message):
+    await message.answer(
+        text=LEXICON_RU["/help"]
+    )
+    logger.info(f'Вызвана команда /help пользоваетелм с TG ID {message.from_user.id}')
 
 
 

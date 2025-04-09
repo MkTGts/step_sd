@@ -9,7 +9,7 @@ LEXICON_RU: dict[str, str] = {
 }
 
 
-LEXCON_USER_KEYBOARS: dict[str, str] = {
+LEXCON_USER_KEYBOARDS: dict[str, str] = {
     "tickets_list": "Список моих тикетов",
     "create_ticket": "Создать тикет"
 }
@@ -19,6 +19,26 @@ LEXCON_USER_HANDLERS: dict[str, str] = {
     "is_tickets_none": "У вас нет тикетов",
     "created_ticket": "Тикет создан",
     "select_creat_ticket": "Введите текст тикета"
+}
+
+
+LEXCON_ADMIN_KEYBOARDS: dict[str, str] = {
+    "users": "Пользователи",
+    "tickets": "Тикеты",
+    "operators": "Операторы",
+    "groups": "Организации",
+    "create_user": "Добавить пользователя",
+    "drop_user": "Удалить пользователя",
+    "create_operator": "Добавить оператора",
+    "drop_operator": "Удалить оператора",
+    "create_group": "Добавить группу",
+    "drop_group": "Удалить группу", 
+    
+}
+
+
+LEXCON_ADMIN_HANDLERS: dict[str, str] = {
+    "start": "Старт администратора"
 }
  
 
