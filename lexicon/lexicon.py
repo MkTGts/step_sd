@@ -4,7 +4,7 @@ LEXICON_RU: dict[str, str] = {
     "not_reg": "Вы не зарегистрированы.\nВведит инвайт код или обратитесь к администратору.",
     "other": "Other",
     "registration_invite_ok": "Запущен процесс регистрации.\nВведите ваше имя.",
-    "registration_invite_ok": "Неверный инвайт.",
+    "registration_invite_not_ok": "Неверный инвайт.",
     
 }
 

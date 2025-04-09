@@ -24,4 +24,4 @@ class IsRegistredUserName(BaseFilter):
     #    self.users_tg_id = base._all_user_tg_id_list()  # список всех тг ид пользователей
 
     async def __call__(self, message: Message):
-        return not base._have_fullname(message.from_user.id) and message.text.isalnum() 
+        return base._in_base(message.from_user.id) and not base._have_fullname(message.from_user.id) and message.text.isalnum() 

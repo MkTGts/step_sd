@@ -8,6 +8,7 @@ from filters.filter import IsRegistredUserInvite, IsRegistredUserName
 from services.db.services.admin_service import AdminServiceDB
 from services.db.services.operator_service import OperatorServiceDB
 from services.db.services.user_service import UserServiceDB
+from keyboards.kyboards_users import user_inline_kb
 
 
 # инициализация логгера
@@ -70,7 +71,8 @@ async def process_registaration_user_invite(message: Message):
 async def process_registration_user_name(message: Message):
     base._set_fullname(tg_id=int(message.from_user.id), fullname=message.text)
     await message.answer(
-        text=f"Имя {message.text} принято"
+        text=f"Имя {message.text} принято",
+        reply_markup=user_inline_kb
     )
 
 
