@@ -60,6 +60,7 @@ async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.answer()
 
 
+# при выборе функции список пользователей, выводит клавиатуру с оранизациями для отбора по нужной
 @router.callback_query(F.data.in_([f"group_for_admin{str(id_)}" for id_ in range(1, 10)]))
 async def process_admin_submenu_users_select_group(callback: CallbackQuery):
     group_id = callback.data[-1]
@@ -69,12 +70,14 @@ async def process_admin_submenu_users_select_group(callback: CallbackQuery):
         "\n\n".join([
             f"ID пользователя: {user['user_id']}\nTG ID: {user['tg_id']}\nusername: {user['username']}\nПолное имя: {user['fullname']}\nIP пользователя: {user['user_ip']}\nРасположение рабочего места пользователя: {user['user_geo']}"
             for user in admin.show_user_list_by_group_id(groupd_id=group_id)
-        ])
+        ]),
+        reply_markup=admin_main_inline_kb
     )
-    await callback.message.edit_reply_markup(reply_markup=None)
+    #await callback.message.edit_reply_markup(reply_markup=None)
     await callback.answer()
 
 
+# отберает пользователей по выбранной в прошлом апдейте-хэндлере организации
 @router.callback_query(F.data.in_("admin_operators"))
 async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.message.answer(
@@ -89,6 +92,20 @@ async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.message.answer(
         text="<b>Организации</b>",
         reply_markup=admin_submenu_groups_kb
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.in_("admin_show_invite_group"))
+async def procces_admin_submenu_groups_shwo_invites(callback: CallbackQuery):
+    groups = admin.show_group_list()
+    await callback.message.answer(
+        text="<b>Список инвайтов:</b>\n" +
+        "\n\n".join(
+            f"Организация: {group["group_name"]}\nИнвайт: {group["invite_token"]}"
+            for group in groups
+        ),
+        reply_markup=admin_main_inline_kb
     )
     await callback.answer()
 

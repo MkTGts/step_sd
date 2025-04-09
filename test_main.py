@@ -27,7 +27,7 @@ admin = AdminServiceDB()
 #print(admin._return_group_operator(group_id=1))
 #print(admin._check_role(tg_id=987421065))
 #admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
-print(admin.show_user_list_by_group_id(groupd_id=1))
+#print(admin.show_user_list_by_group_id(groupd_id=1))
 
 def for_test():
     admin.create_admin(tg_id=321, username="mktgts", fullname="Maksim")
