@@ -30,7 +30,7 @@ router = Router()  # подключение роутера
 @router.message(Command(commands="start"))
 async def process_command_start(message: Message):
     # проверка есть ли пользователь в базе 
-    if not base._in_base(message.from_user.id):
+    if base._check_role(tg_id=message.from_user.id) != "user":
         await message.answer(
             text=LEXICON_RU["not_reg"]
         )
@@ -69,13 +69,7 @@ async def process_registaration_user_invite(message: Message):
         )
 
 
-@router.message(IsRegistredUserName())
-async def process_registration_user_name(message: Message):
-    base._set_fullname(tg_id=int(message.from_user.id), fullname=message.text)
-    await message.answer(
-        text=f"Имя {message.text} принято",
-        reply_markup=user_inline_kb
-    )
+
 
 
 # хэндлер для сообщений не подходящих ни под какую категорию

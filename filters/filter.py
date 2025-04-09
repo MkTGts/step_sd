@@ -31,3 +31,9 @@ class CheckRoleOperator(BaseFilter):
     '''Фильтр проверяющий является пользователь оператором'''
     async def __call__(self, message: Message):
         return base._check_role(tg_id=message.from_user.id)=="operator"
+    
+
+class CheckRoleUser(BaseFilter):
+    '''Фильтр проверяющий явлиется ли пользователь обычным пользователем'''
+    async def __call__(self, message: Message):
+        return base._check_role(tg_id=message.from_user.id)=="user"

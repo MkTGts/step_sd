@@ -7,6 +7,7 @@ from aiogram.fsm.context import FSMContext
 from lexicon.lexicon import LEXICON_RU, LEXCON_USER_HANDLERS
 from services.db.services.user_service import UserServiceDB
 from keyboards.kyboards_users import user_inline_kb
+from filters.filter import IsRegistredUserName, CheckRoleUser
 
 
 
@@ -31,6 +32,16 @@ router = Router()  # инициализация роутера
 class TicketCreation(StatesGroup):
     waiting_for_text = State()
 
+
+
+
+@router.message(IsRegistredUserName())
+async def process_registration_user_name(message: Message):
+    user._set_fullname(tg_id=int(message.from_user.id), fullname=message.text)
+    await message.answer(
+        text=f"Имя {message.text} принято",
+        reply_markup=user_inline_kb
+    )
 
 
 
