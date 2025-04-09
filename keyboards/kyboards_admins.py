@@ -49,6 +49,12 @@ but_admin_show_users = InlineKeyboardButton(
     callback_data="admin_show_users"
 )
 
+# список организаций для просмотра пользователей
+
+
+
+#########
+
 # кнопка для создания пользователя
 but_admin_create_user = InlineKeyboardButton(
     text=LEXCON_ADMIN_KEYBOARDS["create_user"],

@@ -26,7 +26,7 @@ admin = AdminServiceDB()
 #print(admin._return_user_id(321))
 #print(admin._return_group_operator(group_id=1))
 #print(admin._check_role(tg_id=987421065))
-admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
+#admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
 
 def for_test():
     admin.create_admin(tg_id=321, username="mktgts", fullname="Maksim")
@@ -38,6 +38,9 @@ def for_test():
     admin.create_ticket(user_id=2, message="Первый тикет")
 
 #print(admin._all_user_tg_id_list())
+
+for i in admin._return_group_list():
+    print(i.group_name)
 
 
 

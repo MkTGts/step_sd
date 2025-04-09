@@ -27,7 +27,7 @@ LEXCON_ADMIN_KEYBOARDS: dict[str, str] = {
     "tickets": "Тикеты",
     "operators": "Операторы",
     "groups": "Организации",
-    "show_users": "Все пользователи",
+    "show_users": "Список пользователей",
     "create_user": "Добавить пользователя",
     "drop_user": "Удалить пользователя",
     "show_operators": "Все операторы",

@@ -6,8 +6,9 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from lexicon.lexicon import LEXCON_ADMIN_HANDLERS
 from services.db.services.admin_service import AdminServiceDB
-from keyboards.kyboards_admins import admin_submenu_users_kb, admin_main_inline_kb, admin_submenu_operators_kb, admin_submenu_groups_kb, admin_submenu_tickets_kb
+from keyboards.kyboards_admins import admin_submenu_users_kb, admin_main_inline_kb, admin_submenu_operators_kb, admin_submenu_groups_kb, admin_submenu_tickets_kb, but_admin_back_to_main_menu
 from filters.filter import CheckRoleAdmin
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
 
 
@@ -44,6 +45,19 @@ async def process_admin_submenu_users(callback: CallbackQuery):
         text="<b>Пользователи</b>",
         reply_markup=admin_submenu_users_kb
     )
+    await callback.answer()
+
+# при нажатии кнопки Все пользователи, запрашивается список организаций, по которым будет вывод пользователей
+@router.callback_query(F.data.in_("admin_show_users"))
+async def process_admin_submenu_users(callback: CallbackQuery):
+    group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
+    await callback.message.answer(
+        text="<b>Выберите организацию</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin{id_}")]
+                             for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
+        )
+    
     await callback.answer()
 
 

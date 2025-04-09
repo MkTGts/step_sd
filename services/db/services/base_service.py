@@ -47,6 +47,12 @@ class ServiceDB:
     
 
     @with_session
+    def _return_group_list(self, session: Session) -> list:
+        '''Метод возвращающий список всех групп'''
+        return session.query(Group).all()
+    
+
+    @with_session
     def _return_user_id(self, tg_id: int, session: Session) -> int:
         '''Метод возвращающий ID пользователя по TG ID'''
         return session.query(User).filter(User.tg_id==tg_id).first().user_id
