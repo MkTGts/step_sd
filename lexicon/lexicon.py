@@ -30,10 +30,17 @@ LEXCON_ADMIN_KEYBOARDS: dict[str, str] = {
     "show_users": "Все пользователи",
     "create_user": "Добавить пользователя",
     "drop_user": "Удалить пользователя",
+    "show_operators": "Все операторы",
     "create_operator": "Добавить оператора",
     "drop_operator": "Удалить оператора",
-    "create_group": "Добавить группу",
-    "drop_group": "Удалить группу", 
+    "show_groups": "Все организации",
+    "create_group": "Добавить организацию",
+    "drop_group": "Удалить организацию",
+    "show_invite_group": "Инвайты организаций",
+    "show_tickets": "Все тикеты",
+    "create_tickets": "Создать тикет",
+    "edit_tickets": "Изменить статус тикета",
+    "drop_tickets":"Удалить тикет",
     "back_to_main_menu": "<< В основное меню"
     
 }
