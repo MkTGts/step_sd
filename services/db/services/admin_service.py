@@ -1,6 +1,6 @@
 from .operator_service import OperatorServiceDB
-from sqlalchemy.orm import Session
-from services.db.models import User, Group, Admin, Operator
+from sqlalchemy.orm import Session, joinedload
+from services.db.models import User, Group, Admin, Operator, Ticket
 from services.db.decorators import with_session
 from services.service import invite_token_generator
 import logging
@@ -118,19 +118,28 @@ class AdminServiceDB(OperatorServiceDB):
 
 
     @with_session
-    def show_user_list_by_id(self, session: Session):
-        '''Метод выводит список всех пользователей'''
-        return [{"user_id": user.user_id,
-                 "tg_id": user.tg_id,
-                 "username": user.username,
-                 "fullname": user.fullname,
-                 "user_type": user.user_type,
-                 "group_name": session.query(Group).get(user.group_id).group_name,
-                 "user_ip": user.user_ip,
-                 "user_geo": user.user_geo} 
-                for user in session.query(User).all()]
-        
-
+    def show_ticket_list_for_admin(self, session: Session, group_id: int):
+        '''Методы воводящий список тикетов по group_id'''
+        try:
+            users = session.query(User)
+            operators = session.query(Operator)
+            
+            return [
+                {
+                "ticket_id": ticket.ticket_id,
+                "ticket_status": ticket.status,
+                "user_name": users.get(ticket.user_id).fullname,
+                "user_tg": f"@{users.get(ticket.user_id).username}",
+                "operator_name": operators.get(ticket.operator_id).fullname,
+                "operator_tg": f"@{operators.get(ticket.operator_id).username}",
+                "ticket_create_date": ticket.created_at,
+                "ticket_message": ticket.message
+                }
+                for ticket in session.query(Ticket).filter(Ticket.group_id==group_id).all()
+            ]
+        except Exception as err:
+            logger.critical(f"Ошибка в show_tickets. {err}")
+            
 
     @with_session
     def show_group_list(self, session: Session):

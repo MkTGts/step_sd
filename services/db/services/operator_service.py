@@ -1,7 +1,7 @@
 from .user_service import UserServiceDB
 from services.db.decorators import with_session
 from sqlalchemy.orm import Session
-from services.db.models import User, Ticket, Group
+from services.db.models import User, Ticket, Group, Operator
 import logging
 
 
@@ -47,7 +47,7 @@ class OperatorServiceDB(UserServiceDB):
                  "user_ip": user.user_ip,
                  "user_geo": user.user_geo} 
                 for user in session.query(User).filter(User.group_id==groupd_id).all()]
-
+    
 
 
     @with_session
