@@ -143,6 +143,51 @@ async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.answer()
 
 
+@router.callback_query(F.data.in_("admin_show_operators"))
+async def process_admin_submenu_operators_show(callback: CallbackQuery):
+    await callback.message.answer(
+        text="<b>Список операторов:</b>\n" +
+        "\n\n".join([
+            f"<b>ID оператора</b>: {operator['operator_id']}\n<b>TG ID</b>: {operator['tg_id']}\n<b>Username</b>: {f"{operator['username']}"}\n<b>Полное имя</b>: {operator['fullname']}\n<b>Организация оператора</b>: {operator['group']}"
+            for operator in admin.show_operators_list()
+        ]),
+        reply_markup=admin_main_inline_kb
+    )
+    #await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.answer()
+
+
+
+@router.callback_query(F.data.in_("admin_drop_operator"))
+async def process_admin_submenu_operator_select_operator(callback: CallbackQuery):
+    operator_dict = {operator["operator_id"]: operator["fullname"] for operator in admin.show_operators_list()}
+    
+    await callback.message.answer(
+        text="<b>Выберите оператора для удаления</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(
+                text=name,
+                callback_data=f"operator_for_admin_drop_operator{id_}"
+            )] for id_, name in operator_dict.items()
+        ] + [[but_admin_back_to_main_menu]])
+    )
+   
+    await callback.answer()
+    
+
+
+@router.callback_query(F.data.in_([f"operator_for_admin_drop_operator{str(id_)}" for id_ in range(0, 100)]))
+async def process_admin_submenu_operator_select_operator_drop_operator(callback: CallbackQuery):
+    operator_id: int = int(''.join([s for s in callback.data if s.isdigit()]))
+    admin.drop_operator(operator_id=operator_id)
+    await callback.message.answer(
+        text=f"<b>Оператор с ID {operator_id} удален.</b>"
+    )
+    await callback.answer()
+
+
+
+
 ######################################################################################################
 
 
@@ -156,7 +201,7 @@ async def process_admin_submenu_users(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.in_("admin_show_invite_group"))
-async def process_admin_submenu_groups_shwo_invites(callback: CallbackQuery):
+async def process_admin_submenu_groups_show_invites(callback: CallbackQuery):
     groups = admin.show_group_list()
     await callback.message.answer(
         text="<b>Список инвайтов:</b>\n" +

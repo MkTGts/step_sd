@@ -116,4 +116,19 @@ class OperatorServiceDB(UserServiceDB):
         user.user_geo = user_geo
         logger.info(f"Обновлено расположение рабочего места пользователя с ID {user_id}")
 
+
+    @with_session
+    def show_operators_list(self, session: Session):
+        '''Метод возвращающий список операторов'''
+        return [
+            {
+                "operator_id": operator.operator_id,
+                "username": f'@{operator.username}',
+                "tg_id": operator.tg_id,
+                "fullname":operator.fullname,
+                "group": session.query(Group).filter(Operator.operator_id==operator.operator_id).first().group_name,
+            }
+            for operator in session.query(Operator).all()
+        ]
+
         

@@ -118,6 +118,19 @@ class AdminServiceDB(OperatorServiceDB):
 
 
     @with_session
+    def drop_operator(self, operator_id: int, session: Session):
+        '''Метод удаления оператора'''
+        operator = session.query(Operator).get(operator_id)
+        if not operator:
+            logger.warning(f"Попытка удалить группу с несуществующим ID: {operator_id}")
+            return None
+        
+        session.delete(operator)
+        logger.warning(f"Удален оператор c ID {operator_id}")
+
+
+
+    @with_session
     def show_ticket_list_for_admin(self, session: Session, group_id: int):
         '''Методы воводящий список тикетов по group_id'''
         try:

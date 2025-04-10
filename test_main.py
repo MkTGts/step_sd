@@ -45,7 +45,7 @@ def for_test():
 #print(admin._all_user_tg_id_list())
 
 
-
+#print(admin.show_operators_list())
 
 
 
