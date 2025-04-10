@@ -1,14 +1,13 @@
 import logging
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-from lexicon.lexicon import LEXCON_ADMIN_HANDLERS
 from services.db.services.admin_service import AdminServiceDB
 from keyboards.kyboards_admins import admin_submenu_users_kb, admin_main_inline_kb, admin_submenu_operators_kb, admin_submenu_groups_kb, admin_submenu_tickets_kb, but_admin_back_to_main_menu
 from filters.filter import CheckRoleAdmin
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.fsm.context import FSMContext
 
 
 
@@ -28,6 +27,13 @@ logging.basicConfig(
 
 admin = AdminServiceDB()
 router = Router()
+
+
+# класс для хранения состояния создания группы
+class GroupCreation(StatesGroup):
+    waiting_for_group_name = State()
+
+
 
 
 @router.callback_query(F.data.in_("back_to_main_menu"))
@@ -127,7 +133,7 @@ async def process_admin_submenu_users_select_group_drop_user(callback: CallbackQ
 
 
 #################################################################################################
-# отберает пользователей по выбранной в прошлом апдейте-хэндлере организации
+# отбирает пользователей по выбранной в прошлом апдейте-хэндлере организации
 @router.callback_query(F.data.in_("admin_operators"))
 async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.message.answer(
@@ -135,6 +141,9 @@ async def process_admin_submenu_users(callback: CallbackQuery):
         reply_markup=admin_submenu_operators_kb
     )
     await callback.answer()
+
+
+######################################################################################################
 
 
 @router.callback_query(F.data.in_("admin_groups"))
@@ -147,7 +156,7 @@ async def process_admin_submenu_users(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.in_("admin_show_invite_group"))
-async def procces_admin_submenu_groups_shwo_invites(callback: CallbackQuery):
+async def process_admin_submenu_groups_shwo_invites(callback: CallbackQuery):
     groups = admin.show_group_list()
     await callback.message.answer(
         text="<b>Список инвайтов:</b>\n" +
@@ -159,6 +168,56 @@ async def procces_admin_submenu_groups_shwo_invites(callback: CallbackQuery):
     )
     await callback.answer()
 
+
+@router.callback_query(F.data.in_("admin_create_group"))
+async def process_admin_submenu_groups_create_group(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer(
+        text="Введите название организации"
+    )
+    await state.set_state(GroupCreation.waiting_for_group_name)
+    await callback.answer()
+
+
+@router.message(GroupCreation.waiting_for_group_name)
+async def process_admin_submenu_groups_create_group_create(message: Message, state: FSMContext):
+    admin.create_group(group_name=message.text)
+    await message.answer(
+        text=f"Создана группа {message.text}",
+        reply_markup=admin_main_inline_kb
+    )
+    await state.clear()
+
+
+# при выборе функции удалить организацию, выбираетс организация для удаления
+@router.callback_query(F.data.in_("admin_drop_group"))
+async def process_admin_submenu_group_select_group(callback: CallbackQuery):
+    group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
+    
+    await callback.message.answer(
+        text="<b>Выберите организация для удаления</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(
+                text=name,
+                callback_data=f"group_for_admin_drop_group{id_}"
+            )] for id_, name in group_list.items()
+        ] + [[but_admin_back_to_main_menu]])
+    )
+   
+    await callback.answer()
+    
+
+# удалние, выбранной через инлайн кнопку, группы
+@router.callback_query(F.data.in_([f"group_for_admin_drop_group{str(id_)}" for id_ in range(0, 100)]))
+async def process_admin_submenu_group_select_group_drop_group(callback: CallbackQuery):
+    group_id: int = int(''.join([s for s in callback.data if s.isdigit()]))
+    admin.drop_group(group_id=group_id)
+    await callback.message.answer(
+        text=f"<b>Оганизация с ID {group_id} удалена.</b>"
+    )
+    await callback.answer()
+
+
+########################################################################################################################################
 
 @router.callback_query(F.data.in_("admin_tickets"))
 async def process_admin_submenu_tickets(callback: CallbackQuery):
