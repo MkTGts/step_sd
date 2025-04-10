@@ -21,10 +21,14 @@ class OperatorServiceDB(UserServiceDB):
     @with_session
     def show_groups_users(self,
                            session: Session,
-                           operator_id
+                           operator_id: int|None = None,
+                           group_id: int|None = None
                            ) -> list[dict]:
-        '''Метод просмотра пользователей состоящих в группе этого оператора.'''
-        group_id = session.query(Group).get(operator_id).group_id
+        '''Метод просмотра пользователей состоящих в группе. Поиск или по группе или по оператору.
+        В приорите поиск по оператору и если подан на вход id оператора, то поиск будет по оператору в любом случае'''
+        if operator_id:
+            group_id = session.query(Group).get(operator_id).group_id
+            
         return [{
                 "user_id": user.user_id,
                 "username": user.username,
@@ -34,6 +38,7 @@ class OperatorServiceDB(UserServiceDB):
         }
             for user in session.query(User).filter(User.group_id == group_id).all()
         ]
+
         
 
 

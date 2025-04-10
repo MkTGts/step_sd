@@ -39,6 +39,8 @@ async def process_admin_back_to_main_menu(callback: CallbackQuery):
     await callback.answer()
 
 
+########################################################################################################
+
 @router.callback_query(F.data.in_("admin_users"))
 async def process_admin_submenu_users(callback: CallbackQuery):
     await callback.message.answer(
@@ -47,6 +49,8 @@ async def process_admin_submenu_users(callback: CallbackQuery):
     )
     await callback.answer()
 
+
+###################
 # при нажатии кнопки Все пользователи, запрашивается список организаций, по которым будет вывод пользователей
 @router.callback_query(F.data.in_("admin_show_users"))
 async def process_admin_submenu_users(callback: CallbackQuery):
@@ -75,8 +79,54 @@ async def process_admin_submenu_users_select_group(callback: CallbackQuery):
     )
     #await callback.message.edit_reply_markup(reply_markup=None)
     await callback.answer()
+##################################
 
 
+# при нажатии кнопки удалить пользователz, запрашивается список организаций, по которым будет вывод пользователей и далее выбор кого удалить
+@router.callback_query(F.data.in_("admin_drop_user"))
+async def process_admin_submenu_drop_user_groups_list(callback: CallbackQuery):
+    group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
+    await callback.message.answer(
+        text="<b>Выберите организацию</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_drop_user{str(id_)}")]
+                             for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
+        )
+    await callback.answer()
+
+
+# при выборе функции удалить пользователя, выбрана организация, выводится список пользователей для удаления
+@router.callback_query(F.data.in_([f"group_for_admin_drop_user{str(id_)}" for id_ in range(1, 10)]))
+async def process_admin_submenu_users_select_group(callback: CallbackQuery):
+    group_id = callback.data[-1]
+    users = admin.show_groups_users(group_id=group_id)
+    
+    await callback.message.answer(
+        text="<b>Выберите пользователя для удаления</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(
+                text=user['fullname'],
+                callback_data=f"user_for_drop_{user["user_id"]}"
+            )] for user in users
+        ] + [[but_admin_back_to_main_menu]])
+    )
+   
+    await callback.answer()
+
+
+# удалние, выбранного через инлайн кнопку, пользователя
+@router.callback_query(F.data.in_([f"user_for_drop_{str(id_)}" for id_ in range(0, 100)]))
+async def process_admin_submenu_users_select_group_drop_user(callback: CallbackQuery):
+    user_id: int = int(''.join([s for s in callback.data if s.isdigit()]))
+    admin.drop_user(user_id=user_id)
+    await callback.message.answer(
+        text=f"<b>Пользователь с ID {user_id} удален.</b>"
+    )
+    await callback.answer()
+
+
+
+#################################################################################################
 # отберает пользователей по выбранной в прошлом апдейте-хэндлере организации
 @router.callback_query(F.data.in_("admin_operators"))
 async def process_admin_submenu_users(callback: CallbackQuery):
