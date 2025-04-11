@@ -5,9 +5,11 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from services.db.services.admin_service import AdminServiceDB
 from keyboards.kyboards_admins import admin_submenu_users_kb, admin_main_inline_kb, admin_submenu_operators_kb, admin_submenu_groups_kb, admin_submenu_tickets_kb, but_admin_back_to_main_menu
+from keyboards.set_menu import ticket_status_inline_kb
 from filters.filter import CheckRoleAdmin
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.fsm.context import FSMContext
+from lexicon.lexicon import LEXCON_TICKETS_STATUS
 
 
 
@@ -71,7 +73,8 @@ async def process_admin_submenu_users(callback: CallbackQuery):
 
 
 # при выборе функции список пользователей, выводит клавиатуру с оранизациями для отбора по нужной
-@router.callback_query(F.data.in_([f"group_for_admin{str(id_)}" for id_ in range(1, 10)]))
+#@router.callback_query(F.data.in_([f"group_for_admin{str(id_)}" for id_ in range(1, 10)]))
+@router.callback_query(F.data.regexp(r"group_for_admin\d+$"))
 async def process_admin_submenu_users_select_group(callback: CallbackQuery):
     group_id = callback.data[-1]
 
@@ -102,7 +105,8 @@ async def process_admin_submenu_drop_user_groups_list(callback: CallbackQuery):
 
 
 # при выборе функции удалить пользователя, выбрана организация, выводится список пользователей для удаления
-@router.callback_query(F.data.in_([f"group_for_admin_drop_user{str(id_)}" for id_ in range(1, 10)]))
+#@router.callback_query(F.data.in_([f"group_for_admin_drop_user{str(id_)}" for id_ in range(1, 10)]))
+@router.callback_query(F.data.regexp(r"group_for_admin_drop_user\d+$"))
 async def process_admin_submenu_users_select_group(callback: CallbackQuery):
     group_id = callback.data[-1]
     users = admin.show_groups_users(group_id=group_id)
@@ -121,7 +125,8 @@ async def process_admin_submenu_users_select_group(callback: CallbackQuery):
 
 
 # удалние, выбранного через инлайн кнопку, пользователя
-@router.callback_query(F.data.in_([f"user_for_drop_{str(id_)}" for id_ in range(0, 100)]))
+#@router.callback_query(F.data.in_([f"user_for_drop_{str(id_)}" for id_ in range(0, 100)]))
+@router.callback_query(F.data.regexp(r"user_for_drop_\d+$"))
 async def process_admin_submenu_users_select_group_drop_user(callback: CallbackQuery):
     user_id: int = int(''.join([s for s in callback.data if s.isdigit()]))
     admin.drop_user(user_id=user_id)
@@ -176,7 +181,8 @@ async def process_admin_submenu_operator_select_operator(callback: CallbackQuery
     
 
 
-@router.callback_query(F.data.in_([f"operator_for_admin_drop_operator{str(id_)}" for id_ in range(0, 100)]))
+#@router.callback_query(F.data.in_([f"operator_for_admin_drop_operator{str(id_)}" for id_ in range(0, 100)]))
+@router.callback_query(F.data.regexp(r"operator_for_admin_drop_operator\d+$"))
 async def process_admin_submenu_operator_select_operator_drop_operator(callback: CallbackQuery):
     operator_id: int = int(''.join([s for s in callback.data if s.isdigit()]))
     admin.drop_operator(operator_id=operator_id)
@@ -252,7 +258,8 @@ async def process_admin_submenu_group_select_group(callback: CallbackQuery):
     
 
 # удалние, выбранной через инлайн кнопку, группы
-@router.callback_query(F.data.in_([f"group_for_admin_drop_group{str(id_)}" for id_ in range(0, 100)]))
+#@router.callback_query(F.data.in_([f"group_for_admin_drop_group{str(id_)}" for id_ in range(0, 100)]))
+@router.callback_query(F.data.regexp(r"group_for_admin_drop_group\d+$"))
 async def process_admin_submenu_group_select_group_drop_group(callback: CallbackQuery):
     group_id: int = int(''.join([s for s in callback.data if s.isdigit()]))
     admin.drop_group(group_id=group_id)
@@ -274,7 +281,7 @@ async def process_admin_submenu_tickets(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.in_("admin_show_tickets"))
-async def process_admin_submenu_tickets_show_tockets(callback: CallbackQuery):
+async def process_admin_submenu_tickets_show_tickets(callback: CallbackQuery):
     group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
     await callback.message.answer(
         text="<b>Выберите организацию</b>",
@@ -286,7 +293,8 @@ async def process_admin_submenu_tickets_show_tockets(callback: CallbackQuery):
 
 
 # при выборе функции список тикетов, выводит клавиатуру с оранизациями для отбора по нужной
-@router.callback_query(F.data.in_([f"group_for_admin_ticket{str(id_)}" for id_ in range(1, 10)]))
+#@router.callback_query(F.data.in_([f"group_for_admin_ticket{str(id_)}" for id_ in range(1, 10)]))
+@router.callback_query(F.data.regexp(r"group_for_admin_ticket\d+$"))
 async def process_admin_submenu_ticket_select_group(callback: CallbackQuery):
     group_id = callback.data[-1]
     try:
@@ -304,6 +312,109 @@ async def process_admin_submenu_ticket_select_group(callback: CallbackQuery):
             text="Похоже что тикетов нет..."
         )
     await callback.answer()
+
+
+@router.callback_query(F.data.in_("admin_edit_tickets"))
+async def process_admin_submenu_tickets_edit_tickets(callback: CallbackQuery):
+    group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
+    await callback.message.answer(
+        text="<b>Выберите организацию</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_edit_ticket{str(id_)}")]
+                             for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
+        )
+    await callback.answer()
+
+
+#@router.callback_query(F.data.in_([f"group_for_admin_edit_ticket{str(id_)}" for id_ in range(1, 10)]))
+@router.callback_query(F.data.regexp(r"group_for_admin_edit_ticket\d+$"))
+async def process_admin_submenu_tickets_edit_tickets_select_group(callback: CallbackQuery):
+    group_id = callback.data[-1]
+    ticket_dict = {tic["ticket_id"]: f"{tic["ticket_message"][:45]}..." for tic in admin.show_ticket_list_for_admin(group_id=group_id)}
+    await callback.message.answer(
+        text="<b>Выберите тикет</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text=ticket, callback_data=f"group_for_admin_edit_ticket_select_group_select_ticket{str(id_)}")]
+                             for id_, ticket in ticket_dict.items()] + [[but_admin_back_to_main_menu]])
+        )
+    await callback.answer()
+
+
+#@router.callback_query(F.data.in_([f"group_for_admin_edit_ticket_select_group_select_ticket{str(id_)}" for id_ in range(1, 100)]))
+@router.callback_query(F.data.regexp(r"group_for_admin_edit_ticket_select_group_select_ticket\d+$"))
+async def process_admin_submenu_tickets_edit_tickets_select_group_select_ticket(callback: CallbackQuery):
+    ticket_id = callback.data[-1]
+    await callback.message.answer(
+        text="<b>Выберите новый статус для тикета</b>",
+        reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                        [InlineKeyboardButton(
+                                text="Открыта",
+                                callback_data=f"open:{ticket_id}"
+                    )], 
+                        [InlineKeyboardButton(
+                                text="В работе",
+                                callback_data=f"in_work:{ticket_id}"
+                    )], 
+                        [InlineKeyboardButton(
+                                text="Закрыта",
+                                callback_data=f"closed:{ticket_id}"
+                    )]
+    ])
+        )
+    await callback.answer()
+
+
+@router.callback_query(F.data.regexp(r"open:\d+$"))
+@router.callback_query(F.data.regexp(r"in_work:\d+$"))
+@router.callback_query(F.data.regexp(r"closed:\d+$"))
+async def process_admin_submenu_tickets_edit_tickets_select_group_select_ticket_edit_status(callback: CallbackQuery):
+    ticket_id = callback.data.split(":")
+    admin.edit_status(ticket_id=ticket_id[-1], status=LEXCON_TICKETS_STATUS[ticket_id[0]])
+    await callback.message.answer(
+        text="<b>Новый статус установлен</b>",
+        reply_markup=admin_main_inline_kb
+        )
+    await callback.answer()
+
+
+
+@router.callback_query(F.data.in_("admin_drop_tickets"))
+async def process_admin_submenu_tickets_drop_tickets(callback: CallbackQuery):
+    group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
+    await callback.message.answer(
+        text="<b>Выберите организацию</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_drop_ticket{str(id_)}")]
+                             for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
+        )
+    await callback.answer()
+
+
+@router.callback_query(F.data.regexp(r"group_for_admin_drop_ticket\d+$"))
+async def process_admin_submenu_tickets_drop_tickets_select_group(callback: CallbackQuery):
+    group_id = callback.data[-1]
+    ticket_dict = {tic["ticket_id"]: f"{tic["ticket_message"][:45]}..." for tic in admin.show_ticket_list_for_admin(group_id=group_id)}
+    await callback.message.answer(
+        text="<b>Выберите тикет</b>",
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text=ticket, callback_data=f"group_for_admin_drop_ticket_select_group_select_ticket:{str(id_)}")]
+                             for id_, ticket in ticket_dict.items()] + [[but_admin_back_to_main_menu]])
+        )
+    await callback.answer()
+
+
+@router.callback_query(F.data.regexp(r"group_for_admin_drop_ticket_select_group_select_ticket:\d+$"))
+async def process_admin_submenu_tickets_edit_tickets_select_group_select_ticket_edit_status(callback: CallbackQuery):
+    ticket_id = callback.data.split(":")
+    admin.drop_ticket(ticket_id=ticket_id[-1])
+    await callback.message.answer(
+        text="<b>Тикет удален</b>",
+        reply_markup=admin_main_inline_kb
+        )
+    await callback.answer()
+
+
 
 
 

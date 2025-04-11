@@ -107,10 +107,10 @@ admin_submenu_tickets_kb = InlineKeyboardMarkup(
                     text=LEXCON_ADMIN_KEYBOARDS["show_tickets"],
                     callback_data="admin_show_tickets"
         )],
-            [InlineKeyboardButton(
-                    text=LEXCON_ADMIN_KEYBOARDS["create_tickets"],
-                    callback_data="admin_create_tickets"
-        )],
+#            [InlineKeyboardButton(
+#                    text=LEXCON_ADMIN_KEYBOARDS["create_tickets"],
+#                    callback_data="admin_create_tickets"
+#        )],
             [InlineKeyboardButton(
                     text=LEXCON_ADMIN_KEYBOARDS["edit_tickets"],
                     callback_data="admin_edit_tickets"

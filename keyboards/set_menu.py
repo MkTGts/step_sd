@@ -1,6 +1,26 @@
 from aiogram import Bot
 from aiogram.types import BotCommand
 from lexicon.lexicon import LEXICON_COMMANDS_RU
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+
+
+# создание инлайн клавиатуры основного меню админа
+ticket_status_inline_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+            [InlineKeyboardButton(
+                    text="Открыта",
+                    callback_data="open"
+        )], 
+            [InlineKeyboardButton(
+                    text="В работе",
+                    callback_data="in_work"
+        )], 
+            [InlineKeyboardButton(
+                    text="Закрыта",
+                    callback_data="closed"
+        )]
+    ])
 
 
 # функция кнопок меню

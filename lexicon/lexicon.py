@@ -8,6 +8,12 @@ LEXICON_RU: dict[str, str] = {
     
 }
 
+LEXCON_TICKETS_STATUS: dict[str, str] = {
+    "open": "Открыт",
+    "in_work": "В работе",
+    "closed": "Закрыт"
+}
+
 
 LEXCON_USER_KEYBOARDS: dict[str, str] = {
     "tickets_list": "Список моих тикетов",

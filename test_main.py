@@ -11,9 +11,9 @@ admin = AdminServiceDB()
 #print(admin.show_group_list())
 #admin.drop_user(user_id=4)
 #admin.drop_group(group_id=1)
-#admin.create_ticket(user_id=1, message="Second ticket")
+#admin.create_ticket(user_id=1, message="second ticket")
 #admin.create_operator(tg_id=2314, username="operator1", fullname="Operator Name", group_id=1)
-#admin.create_admin(tg_id=423, username="admin1", fullname="Admin Name")
+#admin.create_admin(tg_id=6785583959, username="None", fullname="Мария")
 #admin.edit_user_ip(user_id=1, user_ip='192.168.1.10')
 #admin.edit_user_geo(user_id=1, user_geo="серверная")
 #admin.drop_ticket(ticket_id=1)
@@ -34,13 +34,15 @@ admin = AdminServiceDB()
 
 
 def for_test():
-    admin.create_admin(tg_id=321, username="mktgts", fullname="Maksim")
+    admin.create_admin(tg_id=987421065, username="mktgts", fullname="Maksim")
     admin.create_user(tg_id=123, username="user1", fullname="User Name", group_id=1)
     admin.create_user(tg_id=9789, username="secon_user", fullname="Name User2", group_id=1)
     admin.create_user(tg_id=5435, username="threeth_user", fullname="Threeth User", group_id=1)
     admin.create_operator(tg_id=2314, username="operator1", fullname="Operator Name", group_id=1)
     admin.create_group(group_name="Группа1")
     admin.create_ticket(user_id=2, message="Первый тикет")
+
+#for_test()
 
 #print(admin._all_user_tg_id_list())
 
