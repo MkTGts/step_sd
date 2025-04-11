@@ -7,6 +7,7 @@ from aiogram.filters import Command
 from filters.filter import IsRegistredUserInvite
 from keyboards.kyboards_users import user_inline_kb
 from keyboards.kyboards_admins import admin_main_inline_kb
+from keyboards.kyboards_operators import operator_main_inline_kb
 
 
 # инициализация логгера
@@ -45,7 +46,8 @@ async def process_command_start(message: Message):
         )
     elif base._check_role(tg_id=message.from_user.id) == "operator":
         await message.answer(
-            text="Авторизация оператора пройдена"
+            text="Авторизация оператора пройдена",
+            reply_markup=[operator_main_inline_kb.append(user_inline_kb)]
         )
 
 

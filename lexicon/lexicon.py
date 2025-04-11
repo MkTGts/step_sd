@@ -51,10 +51,24 @@ LEXCON_ADMIN_KEYBOARDS: dict[str, str] = {
     
 }
 
-
 LEXCON_ADMIN_HANDLERS: dict[str, str] = {
     "start": "Старт администратора"
 }
+
+
+LEXICON_OPERATOR_KEYBOARDS: dict[str, str] = {
+    "back_to_main_menu": "<< В основное меню",
+    "users": "Пользователи",
+    "show_tickets": "Список тикетов",
+    "edit_status": "Изменить статус тикета"
+}
+
+LEXICON_OPERATOR_HANDLERS: dict[str, str] = {
+    "users_is_none": "Похоже, что пользователей пока нет"
+}
+
+
+
  
 
 LEXICON_COMMANDS_RU: dict[str, str] = {

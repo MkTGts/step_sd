@@ -28,7 +28,16 @@ admin_main_inline_kb = InlineKeyboardMarkup(
             [InlineKeyboardButton(
                     text=LEXCON_ADMIN_KEYBOARDS["tickets"],
                     callback_data="admin_tickets"
+        )], 
+            [InlineKeyboardButton(
+                    text="Меню пользователя",
+                    callback_data="show_users_menu"
+        )],
+            [InlineKeyboardButton(
+                    text="Меню оператора",
+                    callback_data="show_operators_menu"
         )]
+        
     ])
 
 #######################################################################################################################################################

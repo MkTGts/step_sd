@@ -21,13 +21,13 @@ class OperatorServiceDB(UserServiceDB):
     @with_session
     def show_groups_users(self,
                            session: Session,
-                           operator_id: int|None = None,
+                           tg_id: int|None = None,
                            group_id: int|None = None
                            ) -> list[dict]:
         '''Метод просмотра пользователей состоящих в группе. Поиск или по группе или по оператору.
         В приорите поиск по оператору и если подан на вход id оператора, то поиск будет по оператору в любом случае'''
-        if operator_id:
-            group_id = session.query(Group).get(operator_id).group_id
+        if tg_id:
+            group_id = session.query(Operator).filter(Operator.tg_id==tg_id).first().group_id
             
         return [{
                 "user_id": user.user_id,
@@ -38,6 +38,30 @@ class OperatorServiceDB(UserServiceDB):
         }
             for user in session.query(User).filter(User.group_id == group_id).all()
         ]
+    
+
+    @with_session
+    def show_ticket_list_for_operator(self, session: Session, tg_id: int):
+        '''Методы воводящий список тикетов по tg_id оператора'''
+        try:
+            users = session.query(User)
+            operators = session.query(Operator)
+            operator_id = operators.filter(Operator.tg_id==tg_id).first().operator_id
+            tickets = session.query(Ticket).filter(Ticket.operator_id==operator_id).all()
+
+            return [
+                {
+                "ticket_id": ticket.ticket_id,
+                "ticket_status": ticket.status,
+                "user_name": users.get(ticket.user_id).fullname,
+                "user_tg": f"@{users.get(ticket.user_id).username}",
+                "ticket_create_date": ticket.created_at,
+                "ticket_message": ticket.message
+                }
+                for ticket in tickets
+            ]
+        except Exception as err:
+            logger.critical(f"Ошибка в show_tickets. {err}")
 
         
 

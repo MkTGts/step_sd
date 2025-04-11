@@ -5,6 +5,8 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from services.db.services.admin_service import AdminServiceDB
 from keyboards.kyboards_admins import admin_submenu_users_kb, admin_main_inline_kb, admin_submenu_operators_kb, admin_submenu_groups_kb, admin_submenu_tickets_kb, but_admin_back_to_main_menu
+from keyboards.kyboards_users import user_inline_kb
+from keyboards.kyboards_operators import operator_main_inline_kb
 from keyboards.set_menu import ticket_status_inline_kb
 from filters.filter import CheckRoleAdmin
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
@@ -413,6 +415,27 @@ async def process_admin_submenu_tickets_edit_tickets_select_group_select_ticket_
         reply_markup=admin_main_inline_kb
         )
     await callback.answer()
+
+
+
+
+@router.callback_query(F.data.in_("show_users_menu"))
+async def process_admin_show_users_menu(callback: CallbackQuery):
+    await callback.message.answer(
+        text="<b>Меню пользователя</b>",
+        reply_markup=user_inline_kb
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.in_("show_operators_menu"))
+async def process_admin_show_operators_menu(callback: CallbackQuery):
+    await callback.message.answer(
+        text="<b>Меню оператора</b>",
+        reply_markup=operator_main_inline_kb
+    )
+    await callback.answer()
+
 
 
 
