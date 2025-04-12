@@ -18,7 +18,7 @@ def load_config():
 
     return Config(
         tg_bot=TgBot(
-            bot_token=env("BOT")
+            bot_token=env("BOT_STEP_SD")
         )
     )
 
