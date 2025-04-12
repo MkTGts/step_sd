@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file=./main.py
+file=./main_step_sd_bot.py
 
 source ./venv/bin/activate
 

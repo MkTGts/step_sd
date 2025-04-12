@@ -138,7 +138,7 @@ class ServiceDB:
         new_ticket = Ticket(
             user_id = user_id,
             group_id = group_id,
-            operator_id = session.query(Operator).filter(Group.group_id == group_id).first().operator_id,  #operator_id,
+            operator_id = session.query(Operator).filter(Operator.group_id == group_id).first().operator_id,  #operator_id,
             message = message,
             status = status,
             created_at = now_time(),
