@@ -3,7 +3,7 @@
 
 read -p "Введи токен бота: " BOT_STEP_SD
 
-echo 'export BOT_STEP_SD="$BOT_STEP_SD"' >> ~/.bashrc
+echo "export BOT_STEP_SD=\"$BOT_STEP_SD\"" >> ~/.bashrc
 source ~/.bashrc
 
 
