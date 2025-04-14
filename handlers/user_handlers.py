@@ -89,7 +89,7 @@ async def process_creating_ticket_user(message: Message, state: FSMContext):
         reply_markup=user_inline_kb
     )
     await message.bot.send_message(
-        chat_id=427431420,
+        chat_id=operator.operator_id,
         text=f"<u><b>Новый тикет</b></u>\n<b>Организация</b>: {group_name}\n<b>Пользователь</b>: {user_.fullname}\n<b>Номер телеофна:</b> {user_.user_ip}\n<b>Текст тикета</b>: {message.text}"
     )
     await state.clear()

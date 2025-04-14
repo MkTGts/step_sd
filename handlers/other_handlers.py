@@ -96,10 +96,7 @@ async def process_command_help(message: Message):
 # хэндлер для сообщений не подходящих ни под какую категорию
 @router.message()
 async def other_all_mess(message: Message):
-    #await message.answer(
-    #    text=LEXICON_RU["other"]
-    #)
     await message.answer(
-            text=base._return_info_on_inn(inn=str(message.text))["suggestions"][0]["value"]
-        )
+        text="Не понимаю."
+    )
     logger.info(f'Other command user id - {message.from_user.id}')
