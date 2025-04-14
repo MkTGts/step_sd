@@ -11,7 +11,7 @@ class IsRegistredUserInvite(BaseFilter):
     '''Фильтр проверяющий зарегистрирован ли пользователь и введен ли инвайт.
     Использоваться будет в команде /start (для незарегистрированных пользователей)'''
     async def __call__(self, message: Message):
-        return (base._check_role(tg_id=message.from_user.id) is None) and message.text.isdigit() and len(message.text) == 6
+        return (base._check_role(tg_id=message.from_user.id) is None) and message.text.isdigit() 
 
 
 class IsRegistredUserName(BaseFilter):

@@ -39,17 +39,21 @@ class ServiceDB:
     
 
     @with_session
-    def _return_group_info(self, session: Session, group_id: int):
-        return session.query(Group).filter(Group.group_id==group_id).first()
+    def _return_group_info(self, session: Session, group_id: int|None=None, invite: str|int|None=None):
+        if group_id:
+            return session.query(Group).filter(Group.group_id==group_id).first()
+        elif invite:
+            return session.query(Group).filter(Group.invite_token==invite).first()
     
 
-    def _return_company_name(self, inn: str):
+    def _return_info_on_inn(self, inn: str|int):
         response = requests.post(
             url="http://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party",
             headers={"Authorization": config.tg_bot.token_inn},
             json={"query": str(inn)}
         )
-        return response.json()["suggestions"][0]["value"]
+        return response.json()
+        #return response.json()["suggestions"][0]["value"]
 
 
     @with_session
@@ -118,6 +122,24 @@ class ServiceDB:
         except Exception as e:
             logger.error(f"Ошибка определения роли для tg_id={tg_id}: {str(e)}")
             raise 
+
+
+    @with_session
+    def create_group(self,
+                        session: Session,
+                        group_name: str,  # название группы 
+                        inn: None
+                    ):
+        '''Метод создания новой группы'''
+        try:
+            new_group = Group(
+                group_name=group_name,
+                invite_token=inn,
+            )
+            session.add(new_group)
+            logger.info(f"Группа {new_group.group_name} создана")
+        except Exception as err:
+            logger.warning(f'Во время создания группы возникла ошибка {err}')
     
 
     @with_session
@@ -157,11 +179,15 @@ class ServiceDB:
                       ):
         '''Метод создания нового тикета.'''
         group_id = session.query(User).get(user_id).group_id
+        try:
+            operator_id = session.query(Operator).filter(Operator.group_id == group_id).first().operator_id
+        except:
+            operator_id = None
 
         new_ticket = Ticket(
             user_id = user_id,
             group_id = group_id,
-            operator_id = session.query(Operator).filter(Operator.group_id == group_id).first().operator_id,  #operator_id,
+            operator_id = operator_id,  #session.query(Operator).filter(Operator.group_id == group_id).first().operator_id,  #operator_id,
             message = message,
             status = status,
             created_at = now_time(),

@@ -20,19 +20,6 @@ logging.basicConfig(
 
 
 class AdminServiceDB(OperatorServiceDB):
-    @with_session
-    def create_group(self,
-                        session: Session,
-                        group_name: str,  # название группы 
-                    ):
-        '''Метод создания новой группы'''
-        new_group = Group(
-            group_name=group_name,
-            invite_token=invite_token_generator()
-        )
-        session.add(new_group)
-
-
 
     @with_session
     def create_user(self, 

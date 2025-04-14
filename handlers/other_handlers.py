@@ -63,6 +63,19 @@ async def process_registaration_user_invite(message: Message):
         await message.answer(
             text=LEXICON_RU["registration_invite_ok"]
         )
+    elif base._return_info_on_inn(inn=str(message.text)):
+        org = base._return_info_on_inn(inn=str(message.text))
+        base.create_group(group_name=org["suggestions"][0]["value"], inn=str(message.text))
+        group_ = base._return_group_info(invite=message.text)
+        base.user_registration(
+            invite_token=group_.invite_token,
+            tg_id=(message.from_user.id),
+            username=message.from_user.username
+        )
+        await message.answer(
+            text=f"Ваша организация определна как {org["suggestions"][0]["value"]}\nВведите ваше имя"
+        )
+        
     else:
         await message.answer(
             text=LEXICON_RU["registration_invite_not_ok"]
@@ -83,7 +96,10 @@ async def process_command_help(message: Message):
 # хэндлер для сообщений не подходящих ни под какую категорию
 @router.message()
 async def other_all_mess(message: Message):
+    #await message.answer(
+    #    text=LEXICON_RU["other"]
+    #)
     await message.answer(
-        text=LEXICON_RU["other"]
-    )
+            text=base._return_info_on_inn(inn=str(message.text))["suggestions"][0]["value"]
+        )
     logger.info(f'Other command user id - {message.from_user.id}')

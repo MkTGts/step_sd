@@ -13,7 +13,7 @@ admin = AdminServiceDB()
 #admin.drop_group(group_id=1)
 #admin.create_ticket(user_id=1, message="threeth ticket")
 #admin.create_operator(tg_id=123, username="operator1", fullname="maksim", group_id=1)
-admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
+#admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
 #admin.edit_user_ip(user_id=1, user_ip='192.168.1.10')
 #admin.edit_user_geo(user_id=1, user_geo="серверная")
 #admin.drop_ticket(ticket_id=1)
@@ -30,7 +30,12 @@ admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
 #print(admin.show_user_list_by_group_id(groupd_id=1))
 #print(admin.show_ticket_list_for_admin(group_id=1))
 
-#admin.create_group(group_name="Группа 2")
+
+admin.create_group(
+    group_name=admin._return_info_on_inn(inn=370260905156)["suggestions"][0]["value"],
+    inn="370260905156"
+)
+
 #
 #print(admin.show_groups_users(tg_id=2314))
 #print(admin.show_ticket_list_for_operator(tg_id=987421065))
