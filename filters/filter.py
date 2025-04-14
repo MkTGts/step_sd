@@ -18,7 +18,7 @@ class IsRegistredUserName(BaseFilter):
     '''Фильтр проверяющий зарегистрирован ли пользовател и введено ли имя.
     Будет использоваться после ввода инвайта (для незарегистрированных пользователей)'''
     async def __call__(self, message: Message):
-        return base._check_role(tg_id=message.from_user.id)=="user" and not base._have_fullname(message.from_user.id) and message.text.isalnum() 
+        return base._check_role(tg_id=message.from_user.id)=="user" and base._have_fullname(tg_id=message.from_user.id) is None and message.text.isalnum() 
     
 
 class CheckRoleAdmin(BaseFilter):

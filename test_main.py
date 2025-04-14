@@ -31,10 +31,12 @@ admin = AdminServiceDB()
 #print(admin.show_ticket_list_for_admin(group_id=1))
 
 
-admin.create_group(
+'''admin.create_group(
     group_name=admin._return_info_on_inn(inn=370260905156)["suggestions"][0]["value"],
     inn="370260905156"
-)
+)'''
+
+print(admin._have_fullname(tg_id=987421065))
 
 #
 #print(admin.show_groups_users(tg_id=2314))
