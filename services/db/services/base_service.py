@@ -36,6 +36,12 @@ class ServiceDB:
     def _return_operator_info(self, session: Session, group_id: int):
         '''Метод возвращающий информацию об операторе как объект'''
         return session.query(Operator).filter(Operator.group_id==group_id).first()
+
+
+    @with_session
+    def _return_admins_id_list(self, session: Session):
+        '''Метод возращает список tg идишнокв админов'''
+        return session.query(Admin.tg_id).all()
     
 
     @with_session

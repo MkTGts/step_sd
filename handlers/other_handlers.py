@@ -1,5 +1,5 @@
 import logging
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message
 from handlers.base import base
 from lexicon.lexicon import LEXICON_RU
@@ -32,6 +32,9 @@ async def process_command_start(message: Message):
     if base._check_role(tg_id=message.from_user.id) is None:
         await message.answer(
             text=LEXICON_RU["not_reg"]
+        )
+        await message.answer(
+            text="Для регистрации введите ИНН вашей организцаии."
         )
         logger.info(f"Пришла команда старт от незарегистрированного пользователя с  TG ID {message.from_user.id}")
     elif base._check_role(tg_id=message.from_user.id) == "user":
@@ -82,7 +85,6 @@ async def process_registaration_user_invite(message: Message):
         )
 
 
-
 # хэндлер на команду хелп
 @router.message(Command(commands="help"))
 async def process_command_help(message: Message):
@@ -90,7 +92,6 @@ async def process_command_help(message: Message):
         text=LEXICON_RU["/help"]
     )
     logger.info(f'Вызвана команда /help пользоваетелм с TG ID {message.from_user.id}')
-
 
 
 # хэндлер для сообщений не подходящих ни под какую категорию

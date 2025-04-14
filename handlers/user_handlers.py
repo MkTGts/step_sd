@@ -88,10 +88,20 @@ async def process_creating_ticket_user(message: Message, state: FSMContext):
         text=LEXCON_USER_HANDLERS["created_ticket"],
         reply_markup=user_inline_kb
     )
-    await message.bot.send_message(
-        chat_id=operator.operator_id,
-        text=f"<u><b>Новый тикет</b></u>\n<b>Организация</b>: {group_name}\n<b>Пользователь</b>: {user_.fullname}\n<b>Номер телеофна:</b> {user_.user_ip}\n<b>Текст тикета</b>: {message.text}"
-    )
+    text = f"<u><b>Новый тикет</b></u>\n<b>Организация</b>: {group_name}\n<b>Пользователь</b>: {user_.fullname}\n<b>Номер телеофна:</b> {user_.user_ip}\n<b>Текст тикета</b>: {message.text}"
+
+    try:
+        await message.bot.send_message(
+            chat_id=operator.operator_id,
+            text=text
+        )
+    except:
+        for id_ in user._return_admins_id_list():
+            await message.bot.send_message(
+                chat_id=id_[0],
+                text=text
+            )
+
     await state.clear()
 
 
