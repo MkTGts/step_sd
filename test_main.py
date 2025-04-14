@@ -35,6 +35,10 @@ admin.create_admin(tg_id=987421065, username="mktgts", fullname="Максим")
 #print(admin.show_groups_users(tg_id=2314))
 #print(admin.show_ticket_list_for_operator(tg_id=987421065))
 
+#print(admin._return_user_info(tg_id=987421065).fullname)
+#print(admin._return_operator_info(group_id=2).fullname)
+#print(admin._return_group_info(group_id=2).group_name)
+#print(admin._return_company_name(inn=3328423228))
 
 def for_test():
     admin.create_admin(tg_id=987421065, username="mktgts", fullname="Maksim")

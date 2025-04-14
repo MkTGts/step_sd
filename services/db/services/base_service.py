@@ -4,6 +4,8 @@ from services.db.decorators import with_session
 from services.service import now_time
 import functools
 import logging
+import requests
+from data.config import Config, load_config
 
 
 # инициализация логгера
@@ -18,8 +20,37 @@ logging.basicConfig(
 )
 
 
+config: Config = load_config()
+
+
 class ServiceDB:
     '''Класс с методами для работы с базой данных, достпными дял всех пользователей.'''    
+
+    @with_session
+    def _return_user_info(self, session: Session, tg_id: int):
+        '''Метод возвращающий информацию о пользователе как объект'''
+        return session.query(User).filter(User.tg_id==tg_id).first()
+
+    
+    @with_session
+    def _return_operator_info(self, session: Session, group_id: int):
+        '''Метод возвращающий информацию об операторе как объект'''
+        return session.query(Operator).filter(Operator.group_id==group_id).first()
+    
+
+    @with_session
+    def _return_group_info(self, session: Session, group_id: int):
+        return session.query(Group).filter(Group.group_id==group_id).first()
+    
+
+    def _return_company_name(self, inn: str):
+        response = requests.post(
+            url="http://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party",
+            headers={"Authorization": config.tg_bot.token_inn},
+            json={"query": str(inn)}
+        )
+        return response.json()["suggestions"][0]["value"]
+
 
     @with_session
     def _in_invite(self, invite_token: int, session: Session):
@@ -67,14 +98,6 @@ class ServiceDB:
     @with_session
     def _check_role(self, session: Session, tg_id: int):
         '''Метод определяющий роль пользователя по тг ид'''
-        '''if session.query(Admin).filter(Admin.tg_id==tg_id).first():
-            return "admin"
-        elif session.query(Operator).filter(Operator.tg_id==tg_id).first():
-            return "operator"
-        elif session.query(User).filter(User.tg_id==tg_id).first():
-            return "user"
-        else:
-            return None'''
         try:
             # Проверяем от высшей роли к низшей
             if session.query(Admin).filter(Admin.tg_id == tg_id).first():

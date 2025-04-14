@@ -5,6 +5,8 @@ from dataclasses import dataclass
 @dataclass
 class TgBot:
     bot_token: str
+    token_inn: str
+
 
 
 @dataclass
@@ -18,7 +20,8 @@ def load_config():
 
     return Config(
         tg_bot=TgBot(
-            bot_token=env("BOT_STEP_SD")
+            bot_token=env("BOT_STEP_SD"),
+            token_inn=env("TOKEN_INN")
         )
     )
 

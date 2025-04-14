@@ -8,6 +8,7 @@ from lexicon.lexicon import LEXICON_RU, LEXCON_USER_HANDLERS
 from services.db.services.user_service import UserServiceDB
 from keyboards.kyboards_users import user_inline_kb
 from filters.filter import IsRegistredUserName, CheckRoleUser
+from services.db.models import User, Operator
 
 
 
@@ -75,6 +76,10 @@ async def process_select_creat_ticket_user(callback: CallbackQuery, state: FSMCo
 
 @router.message(TicketCreation.waiting_for_text)
 async def process_creating_ticket_user(message: Message, state: FSMContext):
+    user_ = user._return_user_info(tg_id=message.from_user.id)
+    operator = user._return_operator_info(group_id=user_.group_id)
+    group_name = user._return_group_info(group_id=user_.group_id).group_name
+
     user.create_ticket(
         user_id=user._return_user_id(message.from_user.id),
         message=message.text
@@ -82,6 +87,10 @@ async def process_creating_ticket_user(message: Message, state: FSMContext):
     await message.answer(
         text=LEXCON_USER_HANDLERS["created_ticket"],
         reply_markup=user_inline_kb
+    )
+    await message.bot.send_message(
+        chat_id=427431420,
+        text=f"<u><b>Новый тикет</b></u>\n<b>Организация</b>: {group_name}\n<b>Пользователь</b>: {user_.fullname}\n<b>Номер телеофна:</b> {user_.user_ip}\n<b>Текст тикета</b>: {message.text}"
     )
     await state.clear()
 
