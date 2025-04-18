@@ -45,7 +45,7 @@ LEXCON_ADMIN_KEYBOARDS: dict[str, str] = {
     "show_groups": "Все организации",
     "create_group": "Добавить организацию",
     "drop_group": "Удалить организацию",
-    "show_invite_group": "Инвайты организаций",
+    "show_invite_group": "Список организаций с ИНН",
     "show_tickets": "Все тикеты",
     "create_tickets": "Создать тикет",
     "edit_tickets": "Изменить статус тикета",

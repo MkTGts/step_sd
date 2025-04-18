@@ -212,7 +212,7 @@ async def process_admin_submenu_users(callback: CallbackQuery):
 async def process_admin_submenu_groups_show_invites(callback: CallbackQuery):
     groups = admin.show_group_list()
     await callback.message.answer(
-        text="<b>Список инвайтов:</b>\n" +
+        text="<b>Список организаций:</b>\n" +
         "\n\n".join(
             f"Организация: {group["group_name"]}\nИнвайт: {group["invite_token"]}"
             for group in groups
@@ -225,7 +225,7 @@ async def process_admin_submenu_groups_show_invites(callback: CallbackQuery):
 @router.callback_query(F.data.in_("admin_create_group"))
 async def process_admin_submenu_groups_create_group(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
-        text="Введите название организации"
+        text="Введите название организации и ее ИНН через запятую"
     )
     await state.set_state(GroupCreation.waiting_for_group_name)
     await callback.answer()
@@ -233,11 +233,18 @@ async def process_admin_submenu_groups_create_group(callback: CallbackQuery, sta
 
 @router.message(GroupCreation.waiting_for_group_name)
 async def process_admin_submenu_groups_create_group_create(message: Message, state: FSMContext):
-    admin.create_group(group_name=message.text)
-    await message.answer(
-        text=f"Создана группа {message.text}",
-        reply_markup=admin_main_inline_kb
-    )
+    data = message.text.split(",")
+    try:
+        admin.create_group(group_name=data[0].strip(), inn=int(data[1].strip()))
+        await message.answer(
+            text=f"Создана группа {data[0]}",
+            reply_markup=admin_main_inline_kb
+        )
+    except:
+        await message.answer(
+            text="Ошибка при создании группы. Данные введены некорректно.",
+            reply_markup=admin_main_inline_kb
+        )
     await state.clear()
 
 
@@ -322,10 +329,52 @@ async def process_admin_submenu_tickets_edit_tickets(callback: CallbackQuery):
     await callback.message.answer(
         text="<b>Выберите организацию</b>",
         reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_edit_ticket{str(id_)}")]
+            inline_keyboard=[[InlineKeyboardButton(text="По ID", callback_data="group_for_admin_edit_ticket_by_id")]] +
+                [[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_edit_ticket{str(id_)}")]
                              for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
         )
     await callback.answer()
+
+
+
+class SelectTicketByID(StatesGroup):
+    waiting_for_group_id = State()
+
+
+@router.callback_query(F.data.in_("group_for_admin_edit_ticket_by_id"))
+async def process_admin_submenu_tickets_edit_tickets_by_id(callback: CallbackQuery, state:FSMContext):
+    await callback.message.answer(
+        text="Введите ID тикета"
+    )
+    await state.set_state(SelectTicketByID.waiting_for_group_id)
+    await callback.answer()
+
+
+@router.message(SelectTicketByID.waiting_for_group_id)
+async def process_admin_submenu_groups_create_group_create(message: Message, state: FSMContext):
+    if isinstance(message.text, int):
+        ticket_id = int(message.text)
+
+    await message.answer(
+        text="<b>Выберите новый статус для тикета</b>",
+        reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                        [InlineKeyboardButton(
+                                text="Открыта",
+                                callback_data=f"open:{ticket_id}"
+                    )], 
+                        [InlineKeyboardButton(
+                                text="В работе",
+                                callback_data=f"in_work:{ticket_id}"
+                    )], 
+                        [InlineKeyboardButton(
+                                text="Закрыта",
+                                callback_data=f"closed:{ticket_id}"
+                    )]
+    ])
+        )
+    await state.clear()
+
 
 
 #@router.callback_query(F.data.in_([f"group_for_admin_edit_ticket{str(id_)}" for id_ in range(1, 10)]))
