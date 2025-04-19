@@ -123,7 +123,8 @@ class AdminServiceDB(OperatorServiceDB):
         tickets = session.query(Ticket)
         users = session.query(User)
         operators = session.query(Operator)
-        
+        groups = session.query(Group)
+
         try:
             if group_id is None:
                 return [{
@@ -131,6 +132,7 @@ class AdminServiceDB(OperatorServiceDB):
                     "ticket_status": ticket.status,
                     "user_name": users.get(ticket.user_id).fullname,
                     "user_tg": f"@{users.get(ticket.user_id).username}",
+                    "group": groups.get(ticket.group_id).group_name,
                     "operator_name": operators.get(ticket.operator_id).fullname,
                     "operator_tg": f"@{operators.get(ticket.operator_id).username}",
                     "ticket_create_date": ticket.created_at,

@@ -308,7 +308,7 @@ async def process_admin_submenu_tickets_show_tickets_all_tickets(callback: Callb
         await callback.message.answer(
             text="<b>Список тикетов:</b>\n" +
             "\n\n".join([
-                f"<b>ID тикета</b>: {ticket['ticket_id']}\n<b>Статус тикета</b>: {ticket['ticket_status']}\n<b>Дата создания</b>: {ticket['ticket_create_date']}\n<b>Имя пользователя</b>: {ticket['user_name']}\n<b>ТГ пользователя</b>: {ticket['user_tg']}\n<b>Имя оператора</b>: {ticket['operator_name']}\n<b>ТГ оператора</b>: {ticket['operator_tg']}\n<b>Сообщение</b>: {ticket['ticket_message']}"
+                f"<b>ID тикета</b>: {ticket['ticket_id']}\n<b>Организация</b>: {ticket['group']}\n<b>Статус тикета</b>: {ticket['ticket_status']}\n<b>Дата создания</b>: {ticket['ticket_create_date']}\n<b>Имя пользователя</b>: {ticket['user_name']}\n<b>ТГ пользователя</b>: {ticket['user_tg']}\n<b>Имя оператора</b>: {ticket['operator_name']}\n<b>ТГ оператора</b>: {ticket['operator_tg']}\n<b>Сообщение</b>: {ticket['ticket_message']}"
                 for ticket in admin.show_ticket_list_for_admin()
             ]),
             reply_markup=admin_main_inline_kb
@@ -459,7 +459,8 @@ async def process_admin_submenu_tickets_drop_tickets(callback: CallbackQuery):
     await callback.message.answer(
         text="<b>Выберите организацию</b>",
         reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_drop_ticket{str(id_)}")]
+            inline_keyboard=[[InlineKeyboardButton(text="По ID", callback_data="drop_ticket_by_id")]] +
+            [[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_drop_ticket{str(id_)}")]
                              for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
         )
     await callback.answer()
@@ -476,6 +477,47 @@ async def process_admin_submenu_tickets_drop_tickets_select_group(callback: Call
                              for id_, ticket in ticket_dict.items()] + [[but_admin_back_to_main_menu]])
         )
     await callback.answer()
+
+
+
+
+
+class DropTicketByID(StatesGroup):
+    waiting_for_ticket_id = State()
+
+
+@router.callback_query(F.data.in_("drop_ticket_by_id"))
+async def process_admin_submenu_tickets_drop_tickets_by_id(callback: CallbackQuery, state:FSMContext):
+    await callback.message.answer(
+        text="Введите ID тикета"
+    )
+    await state.set_state(DropTicketByID.waiting_for_ticket_id)
+    await callback.answer()
+
+
+@router.message(DropTicketByID.waiting_for_ticket_id)
+async def process_admin_submenu_tickets_drop_tickets_by_id_drop(message: Message, state: FSMContext):
+    if message.text.isdigit():
+        ticket_id = int(message.text)
+        try:
+            admin.drop_ticket(ticket_id=ticket_id)
+            await message.answer(
+                text="<b>Тикет удален</b>",
+                reply_markup=admin_main_inline_kb
+                )
+        except Exception as err:
+            logger.error(f"Во время удаления тикета по ID возникла ошибка {err}")
+            await message.answer(
+                text="Не удалось удалить тикет. Проверьте правильность введенного ID"
+            )
+    else:
+        logger.warning("Введено не числовое значение в ID при удалении тикета по ID")
+        await message.answer(
+            text="ID должен быть числом"
+        )
+    await state.clear()
+
+
 
 
 @router.callback_query(F.data.regexp(r"group_for_admin_drop_ticket_select_group_select_ticket:\d+$"))
