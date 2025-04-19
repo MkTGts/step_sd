@@ -118,25 +118,40 @@ class AdminServiceDB(OperatorServiceDB):
 
 
     @with_session
-    def show_ticket_list_for_admin(self, session: Session, group_id: int):
-        '''Методы воводящий список тикетов по group_id'''
+    def show_ticket_list_for_admin(self, session: Session, group_id: int|None=None):
+        '''Методы воводящий список тикетов по group_id, если он подается или все тикеты, если ничего не подается'''
+        tickets = session.query(Ticket)
+        users = session.query(User)
+        operators = session.query(Operator)
+        
         try:
-            users = session.query(User)
-            operators = session.query(Operator)
-            
-            return [
-                {
-                "ticket_id": ticket.ticket_id,
-                "ticket_status": ticket.status,
-                "user_name": users.get(ticket.user_id).fullname,
-                "user_tg": f"@{users.get(ticket.user_id).username}",
-                "operator_name": operators.get(ticket.operator_id).fullname,
-                "operator_tg": f"@{operators.get(ticket.operator_id).username}",
-                "ticket_create_date": ticket.created_at,
-                "ticket_message": ticket.message
+            if group_id is None:
+                return [{
+                    "ticket_id": ticket.ticket_id,
+                    "ticket_status": ticket.status,
+                    "user_name": users.get(ticket.user_id).fullname,
+                    "user_tg": f"@{users.get(ticket.user_id).username}",
+                    "operator_name": operators.get(ticket.operator_id).fullname,
+                    "operator_tg": f"@{operators.get(ticket.operator_id).username}",
+                    "ticket_create_date": ticket.created_at,
+                    "ticket_message": ticket.message
                 }
-                for ticket in session.query(Ticket).filter(Ticket.group_id==group_id).all()
-            ]
+                for ticket in tickets
+                ]
+            else:
+                return [
+                    {
+                    "ticket_id": ticket.ticket_id,
+                    "ticket_status": ticket.status,
+                    "user_name": users.get(ticket.user_id).fullname,
+                    "user_tg": f"@{users.get(ticket.user_id).username}",
+                    "operator_name": operators.get(ticket.operator_id).fullname,
+                    "operator_tg": f"@{operators.get(ticket.operator_id).username}",
+                    "ticket_create_date": ticket.created_at,
+                    "ticket_message": ticket.message
+                    }
+                    for ticket in session.query(Ticket).filter(Ticket.group_id==group_id).all()
+                ]
         except Exception as err:
             logger.critical(f"Ошибка в show_tickets. {err}")
             

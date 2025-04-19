@@ -295,14 +295,33 @@ async def process_admin_submenu_tickets_show_tickets(callback: CallbackQuery):
     await callback.message.answer(
         text="<b>Выберите организацию</b>",
         reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_ticket{str(id_)}")]
+            inline_keyboard=[[InlineKeyboardButton(text="Все организации", callback_data="show_all_tickets_for_admin")]] +
+            [[InlineKeyboardButton(text=group, callback_data=f"group_for_admin_ticket{str(id_)}")]
                              for id_, group in group_list.items()] + [[but_admin_back_to_main_menu]])
         )
     await callback.answer()
 
 
+@router.callback_query(F.data.in_("show_all_tickets_for_admin"))
+async def process_admin_submenu_tickets_show_tickets_all_tickets(callback: CallbackQuery):
+    try:
+        await callback.message.answer(
+            text="<b>Список тикетов:</b>\n" +
+            "\n\n".join([
+                f"<b>ID тикета</b>: {ticket['ticket_id']}\n<b>Статус тикета</b>: {ticket['ticket_status']}\n<b>Дата создания</b>: {ticket['ticket_create_date']}\n<b>Имя пользователя</b>: {ticket['user_name']}\n<b>ТГ пользователя</b>: {ticket['user_tg']}\n<b>Имя оператора</b>: {ticket['operator_name']}\n<b>ТГ оператора</b>: {ticket['operator_tg']}\n<b>Сообщение</b>: {ticket['ticket_message']}"
+                for ticket in admin.show_ticket_list_for_admin()
+            ]),
+            reply_markup=admin_main_inline_kb
+        )
+    except Exception as err:
+        logger.critical('Ошибка в выводе всех тикетов для админа')
+        await callback.message.answer(
+            text="Похоже что тикетов нет..."
+        )
+    await callback.answer()
+
+
 # при выборе функции список тикетов, выводит клавиатуру с оранизациями для отбора по нужной
-#@router.callback_query(F.data.in_([f"group_for_admin_ticket{str(id_)}" for id_ in range(1, 10)]))
 @router.callback_query(F.data.regexp(r"group_for_admin_ticket\d+$"))
 async def process_admin_submenu_ticket_select_group(callback: CallbackQuery):
     group_id = callback.data[-1]
@@ -322,7 +341,7 @@ async def process_admin_submenu_ticket_select_group(callback: CallbackQuery):
         )
     await callback.answer()
 
-
+####
 @router.callback_query(F.data.in_("admin_edit_tickets"))
 async def process_admin_submenu_tickets_edit_tickets(callback: CallbackQuery):
     group_list = {group.group_id: group.group_name for group in admin._return_group_list()}
