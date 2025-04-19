@@ -92,24 +92,24 @@ async def process_admin_submenu_tickets_edit_tickets_select_group_select_ticket(
                 inline_keyboard=[
                         [InlineKeyboardButton(
                                 text="Открыта",
-                                callback_data=f"open:{ticket_id}"
+                                callback_data=f"operator_open:{ticket_id}"
                     )], 
                         [InlineKeyboardButton(
                                 text="В работе",
-                                callback_data=f"in_work:{ticket_id}"
+                                callback_data=f"operator_in_work:{ticket_id}"
                     )], 
                         [InlineKeyboardButton(
                                 text="Закрыта",
-                                callback_data=f"closed:{ticket_id}"
+                                callback_data=f"operator_closed:{ticket_id}"
                     )]
     ])
         )
     await callback.answer()
 
 
-@router.callback_query(F.data.regexp(r"open:\d+$"))
-@router.callback_query(F.data.regexp(r"in_work:\d+$"))
-@router.callback_query(F.data.regexp(r"closed:\d+$"))
+@router.callback_query(F.data.regexp(r"operator_open:\d+$"))
+@router.callback_query(F.data.regexp(r"operator_in_work:\d+$"))
+@router.callback_query(F.data.regexp(r"operator_closed:\d+$"))
 async def process_admin_submenu_tickets_edit_tickets_select_group_select_ticket_edit_status(callback: CallbackQuery):
     ticket_id = callback.data.split(":")
     operator.edit_status(ticket_id=ticket_id[-1], status=LEXCON_TICKETS_STATUS[ticket_id[0]])

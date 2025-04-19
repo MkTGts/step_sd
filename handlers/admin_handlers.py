@@ -352,26 +352,30 @@ async def process_admin_submenu_tickets_edit_tickets_by_id(callback: CallbackQue
 
 @router.message(SelectTicketByID.waiting_for_group_id)
 async def process_admin_submenu_groups_create_group_create(message: Message, state: FSMContext):
-    if isinstance(message.text, int):
-        ticket_id = int(message.text)
-
-    await message.answer(
-        text="<b>Выберите новый статус для тикета</b>",
-        reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[
-                        [InlineKeyboardButton(
-                                text="Открыта",
-                                callback_data=f"open:{ticket_id}"
-                    )], 
-                        [InlineKeyboardButton(
-                                text="В работе",
-                                callback_data=f"in_work:{ticket_id}"
-                    )], 
-                        [InlineKeyboardButton(
-                                text="Закрыта",
-                                callback_data=f"closed:{ticket_id}"
-                    )]
-    ])
+    if message.text.isdigit():
+        ticket_id = message.text
+        await message.answer(
+            text="<b>Выберите новый статус для тикета</b>",
+            reply_markup=InlineKeyboardMarkup(
+                    inline_keyboard=[
+                            [InlineKeyboardButton(
+                                    text="Открыта",
+                                    callback_data=f"open:{ticket_id}"
+                        )], 
+                            [InlineKeyboardButton(
+                                    text="В работе",
+                                    callback_data=f"in_work:{ticket_id}"
+                        )], 
+                            [InlineKeyboardButton(
+                                    text="Закрыта",
+                                    callback_data=f"closed:{ticket_id}"
+                        )]
+        ])
+            )
+    else:
+        message.answer(
+            text="Введен некорректный формат ID",
+            reply_markup=admin_main_inline_kb
         )
     await state.clear()
 
