@@ -4,6 +4,8 @@ import json
 
 admin = AdminServiceDB()
 
+print(admin._return_info_on_inn(inn=123))
+
 
 #admin.create_group(group_name="Администраторы")
 #admin.create_user(tg_id=321, username="mktgts", fullname="qwewq", group_id=1)
@@ -50,7 +52,7 @@ admin = AdminServiceDB()
 #print(admin._return_operator_info(group_id=2).fullname)
 #print(admin._return_group_info(group_id=2).group_name)
 #print(admin._return_company_name(inn=3328423228))
-
+'''
 def for_test():
     admin.create_admin(tg_id=987421065, username="mktgts", fullname="Maksim")
     admin.create_user(tg_id=123, username="user1", fullname="User Name", group_id=1)
@@ -58,7 +60,7 @@ def for_test():
     admin.create_user(tg_id=5435, username="threeth_user", fullname="Threeth User", group_id=1)
     admin.create_operator(tg_id=2314, username="operator1", fullname="Operator Name", group_id=1)
     admin.create_group(group_name="Группа1")
-    admin.create_ticket(user_id=2, message="Первый тикет")
+    admin.create_ticket(user_id=2, message="Первый тикет")'''
 
 #for_test()
 

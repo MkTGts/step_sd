@@ -6,3 +6,4 @@ _test.py
 *.db
 *.xlsx
 *.db
+.vscode/

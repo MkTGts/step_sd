@@ -66,23 +66,25 @@ async def process_registaration_user_invite(message: Message):
         await message.answer(
             text=LEXICON_RU["registration_invite_ok"]
         )
-    elif base._return_info_on_inn(inn=str(message.text)):
-        org = base._return_info_on_inn(inn=str(message.text))
-        base.create_group(group_name=org["suggestions"][0]["value"], inn=str(message.text))
-        group_ = base._return_group_info(invite=message.text)
-        base.user_registration(
-            invite_token=group_.invite_token,
-            tg_id=(message.from_user.id),
-            username=message.from_user.username
-        )
-        await message.answer(
-            text=f"Ваша организация определна как {org["suggestions"][0]["value"]}\nВведите ваше имя"
-        )
-        
     else:
-        await message.answer(
-            text=LEXICON_RU["registration_invite_not_ok"]
-        )
+        org = base._return_info_on_inn(inn=str(message.text))
+        if org["suggestions"]:
+            #org = base._return_info_on_inn(inn=str(message.text))
+            base.create_group(group_name=org["suggestions"][0]["value"], inn=str(message.text))
+            group_ = base._return_group_info(invite=message.text)
+            base.user_registration(
+                invite_token=group_.invite_token,
+                tg_id=(message.from_user.id),
+                username=message.from_user.username
+            )
+            await message.answer(
+                text=f"Ваша организация определна как {org["suggestions"][0]["value"]}\nВведите ваше имя"
+            )
+            
+        else:
+            await message.answer(
+                text=LEXICON_RU["registration_invite_not_ok"]
+            )
 
 
 # хэндлер на команду хелп
